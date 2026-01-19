@@ -52,6 +52,24 @@
         font-size: 1rem;
       }
 
+      .lang-switch {
+        margin-top: 14px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .lang-switch select {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+      }
+
       .app {
         display: grid;
         gap: 20px;
@@ -399,6 +417,10 @@
           text-align: left;
         }
 
+        .lang-switch {
+          justify-content: flex-start;
+        }
+
         .app {
           padding: 16px;
         }
@@ -407,55 +429,84 @@
   </head>
   <body>
     <header>
-      <h1>FitSchema voor heupherstel</h1>
-      <p>Maak je oefeningen, vink per dag af, en kijk terug per week of maand.</p>
+      <h1 data-i18n="header.title">FitSchema voor heupherstel</h1>
+      <p data-i18n="header.subtitle">
+        Maak je oefeningen, vink per dag af, en kijk terug per week of maand.
+      </p>
+      <div class="lang-switch">
+        <span data-i18n="language.label">Taal</span>
+        <select id="language-select">
+          <option value="nl" data-i18n="language.nl">Nederlands</option>
+          <option value="en" data-i18n="language.en">Engels</option>
+          <option value="ru" data-i18n="language.ru">Russisch</option>
+        </select>
+      </div>
     </header>
 
     <div class="app">
       <section class="card">
-        <h2>Schema invoeren</h2>
+        <h2 data-i18n="section.plan">Schema invoeren</h2>
         <form id="exercise-form">
           <div class="row">
             <label style="flex: 1">
-              Naam oefening
-              <input id="exercise-name" type="text" required placeholder="Bijv. heupflexie" />
+              <span data-i18n="form.exerciseName">Naam oefening</span>
+              <input
+                id="exercise-name"
+                type="text"
+                required
+                placeholder="Bijv. heupflexie"
+                data-i18n-placeholder="placeholder.exerciseName"
+              />
             </label>
           </div>
           <div class="row">
             <label style="flex: 1">
-              Type
+              <span data-i18n="form.exerciseType">Type</span>
               <select id="exercise-mode">
-                <option value="hold">Aantal per keer + seconden vasthouden</option>
-                <option value="simple">Alleen aantal per keer</option>
-                <option value="duration">Duur per sessie (minuten)</option>
+                <option value="hold" data-i18n="exerciseType.hold">
+                  Aantal per keer + seconden vasthouden
+                </option>
+                <option value="simple" data-i18n="exerciseType.simple">
+                  Alleen aantal per keer
+                </option>
+                <option value="duration" data-i18n="exerciseType.duration">
+                  Duur per sessie (minuten)
+                </option>
               </select>
             </label>
             <label id="reps-field" style="flex: 1">
-              Aantal per keer
+              <span data-i18n="form.repsPerSet">Aantal per keer</span>
               <input id="exercise-reps" type="number" min="1" value="10" required />
             </label>
             <label id="hold-field" style="flex: 1">
-              Vasthouden (sec)
+              <span data-i18n="form.holdSeconds">Vasthouden (sec)</span>
               <input id="exercise-hold" type="number" min="1" value="5" />
             </label>
             <label id="duration-field" style="flex: 1">
-              Duur per sessie (min)
+              <span data-i18n="form.durationMinutes">Duur per sessie (min)</span>
               <input id="exercise-duration" type="number" min="1" value="10" />
             </label>
           </div>
           <div class="row">
             <label style="flex: 1">
-              Hoe vaak per dag
+              <span data-i18n="form.sessionsPerDay">Hoe vaak per dag</span>
               <input id="exercise-sessions" type="number" min="1" value="3" required />
             </label>
             <label style="flex: 1">
-              Notities
-              <input id="exercise-notes" type="text" placeholder="Optioneel" />
+              <span data-i18n="form.notes">Notities</span>
+              <input
+                id="exercise-notes"
+                type="text"
+                placeholder="Optioneel"
+                data-i18n-placeholder="placeholder.notes"
+              />
             </label>
           </div>
           <div class="form-actions">
             <button type="submit" id="save-exercise">Toevoegen</button>
-            <button type="button" class="ghost" id="reset-form">Annuleren</button>
+            <button type="button" class="ghost" id="reset-form" data-i18n="button.cancel">
+              Annuleren
+            </button>
           </div>
         </form>
 
@@ -463,76 +514,92 @@
       </section>
 
       <section class="card">
-        <h2>Dagelijkse checklist</h2>
+        <h2 data-i18n="section.daily">Dagelijkse checklist</h2>
         <div class="date-row">
           <input id="selected-date" type="date" />
-          <button type="button" class="ghost" id="today-btn">Vandaag</button>
+          <button type="button" class="ghost" id="today-btn" data-i18n="button.today">
+            Vandaag
+          </button>
         </div>
         <div class="summary-grid" id="daily-summary"></div>
         <div class="daily-list" id="daily-list"></div>
         <div class="timer-panel" id="timer-panel"></div>
-        <div class="inline-note">
+        <div class="inline-note" data-i18n="daily.tip">
           Tip: klik op "Voltooi" om alle sessies voor die oefening af te vinken.
         </div>
         <div class="row" style="margin-top: 16px">
           <label style="flex: 1">
-            Pijnscore (0-10)
+            <span data-i18n="form.painScore">Pijnscore (0-10)</span>
             <input id="pain-score" type="range" min="0" max="10" value="0" />
             <span id="pain-value">0</span>
           </label>
           <label style="flex: 1">
-            Beweeglijkheid (1-5)
+            <span data-i18n="form.mobilityScore">Beweeglijkheid (1-5)</span>
             <input id="mobility-score" type="range" min="1" max="5" value="3" />
             <span id="mobility-value">3</span>
           </label>
         </div>
         <div class="row">
           <label style="flex: 1">
-            Tijd besteed (minuten)
+            <span data-i18n="form.minutesSpent">Tijd besteed (minuten)</span>
             <input id="minutes-spent" type="number" min="0" value="0" />
           </label>
         </div>
         <label>
-          Dagnotities
-          <textarea id="daily-note" placeholder="Wat ging goed of moeilijk?"></textarea>
+          <span data-i18n="form.dailyNotes">Dagnotities</span>
+          <textarea
+            id="daily-note"
+            placeholder="Wat ging goed of moeilijk?"
+            data-i18n-placeholder="placeholder.dailyNote"
+          ></textarea>
         </label>
         <div class="form-actions">
-          <button type="button" id="save-daily">Opslaan dag</button>
+          <button type="button" id="save-daily" data-i18n="button.saveDay">
+            Opslaan dag
+          </button>
         </div>
       </section>
 
       <section class="card">
-        <h2>Overzicht</h2>
+        <h2 data-i18n="section.overview">Overzicht</h2>
         <div class="tabs">
-          <button type="button" class="active" data-view="day">Dag</button>
-          <button type="button" data-view="week">Week</button>
-          <button type="button" data-view="month">Maand</button>
+          <button type="button" class="active" data-view="day" data-i18n="tab.day">
+            Dag
+          </button>
+          <button type="button" data-view="week" data-i18n="tab.week">Week</button>
+          <button type="button" data-view="month" data-i18n="tab.month">Maand</button>
         </div>
         <div id="overview"></div>
       </section>
 
       <section class="card">
-        <h2>Data</h2>
+        <h2 data-i18n="section.data">Data</h2>
         <div class="data-actions">
-          <button type="button" id="export-btn">Export</button>
-          <button type="button" class="ghost" id="clear-btn">Wis alles</button>
+          <button type="button" id="export-btn" data-i18n="button.export">Export</button>
+          <button type="button" class="ghost" id="clear-btn" data-i18n="button.clear">
+            Wis alles
+          </button>
           <button type="button" class="ghost file-input">
-            Import
+            <span data-i18n="button.import">Import</span>
             <input id="import-file" type="file" accept="application/json" />
           </button>
         </div>
-        <p class="inline-note">
+        <p class="inline-note" data-i18n="data.note">
           Alles blijft lokaal in je browser. Export maakt een back-up bestand.
         </p>
       </section>
     </div>
 
     <dialog id="export-dialog">
-      <h3>Export</h3>
-      <p>Je data is klaar om te downloaden.</p>
+      <h3 data-i18n="dialog.exportTitle">Export</h3>
+      <p data-i18n="dialog.exportBody">Je data is klaar om te downloaden.</p>
       <div class="form-actions">
-        <button type="button" id="download-export">Download</button>
-        <button type="button" class="ghost" id="close-export">Sluiten</button>
+        <button type="button" id="download-export" data-i18n="button.download">
+          Download
+        </button>
+        <button type="button" class="ghost" id="close-export" data-i18n="button.close">
+          Sluiten
+        </button>
       </div>
     </dialog>
 
@@ -578,13 +645,227 @@
         closeExport: document.getElementById("close-export"),
         importFile: document.getElementById("import-file"),
         clearBtn: document.getElementById("clear-btn"),
+        languageSelect: document.getElementById("language-select"),
+      };
+
+      const translations = {
+        nl: {
+          "app.title": "FitSchema - Heupoperatie trainingsschema",
+          "header.title": "FitSchema voor heupherstel",
+          "header.subtitle":
+            "Maak je oefeningen, vink per dag af, en kijk terug per week of maand.",
+          "language.label": "Taal",
+          "language.nl": "Nederlands",
+          "language.en": "Engels",
+          "language.ru": "Russisch",
+          "section.plan": "Schema invoeren",
+          "section.daily": "Dagelijkse checklist",
+          "section.overview": "Overzicht",
+          "section.data": "Data",
+          "form.exerciseName": "Naam oefening",
+          "form.exerciseType": "Type",
+          "form.repsPerSet": "Aantal per keer",
+          "form.holdSeconds": "Vasthouden (sec)",
+          "form.durationMinutes": "Duur per sessie (min)",
+          "form.sessionsPerDay": "Hoe vaak per dag",
+          "form.notes": "Notities",
+          "form.painScore": "Pijnscore (0-10)",
+          "form.mobilityScore": "Beweeglijkheid (1-5)",
+          "form.minutesSpent": "Tijd besteed (minuten)",
+          "form.dailyNotes": "Dagnotities",
+          "placeholder.exerciseName": "Bijv. heupflexie",
+          "placeholder.notes": "Optioneel",
+          "placeholder.dailyNote": "Wat ging goed of moeilijk?",
+          "exerciseType.hold": "Aantal per keer + seconden vasthouden",
+          "exerciseType.simple": "Alleen aantal per keer",
+          "exerciseType.duration": "Duur per sessie (minuten)",
+          "button.add": "Toevoegen",
+          "button.save": "Opslaan",
+          "button.cancel": "Annuleren",
+          "button.today": "Vandaag",
+          "button.saveDay": "Opslaan dag",
+          "button.complete": "Voltooi",
+          "button.timer": "Timer",
+          "button.export": "Export",
+          "button.clear": "Wis alles",
+          "button.import": "Import",
+          "button.download": "Download",
+          "button.close": "Sluiten",
+          "button.edit": "Bewerk",
+          "button.delete": "Verwijder",
+          "tab.day": "Dag",
+          "tab.week": "Week",
+          "tab.month": "Maand",
+          "daily.tip": 'Tip: klik op "Voltooi" om alle sessies voor die oefening af te vinken.',
+          "daily.summary.complete": "Dag compleet",
+          "daily.summary.sessions": "Sessies gedaan",
+          "daily.summary.streak": "Dagen op rij",
+          "daily.none": "Voeg eerst oefeningen toe om af te vinken.",
+          "daily.extraSessions": "Extra sessies: {count}",
+          "overview.none": "Voeg oefeningen toe om overzicht te zien.",
+          "overview.todayComplete": "Compleet vandaag",
+          "overview.weekAvg": "Gemiddeld week",
+          "overview.monthAvg": "Gemiddeld maand",
+          "overview.selectDate": "Selecteer een andere datum om terug te kijken.",
+          "data.note": "Alles blijft lokaal in je browser. Export maakt een back-up bestand.",
+          "dialog.exportTitle": "Export",
+          "dialog.exportBody": "Je data is klaar om te downloaden.",
+          "exercise.none": "Nog geen oefeningen toegevoegd.",
+          "exercise.perDay": "{count}x per dag",
+          "exercise.description.hold": "{reps}x, {hold}s vasthouden",
+          "exercise.description.simple": "{reps}x per sessie",
+          "exercise.description.duration": "{minutes} min per sessie",
+          "timer.done": "klaar!",
+          "confirm.clearAll": "Weet je zeker dat je alles wilt wissen?",
+        },
+        en: {
+          "app.title": "FitSchema - Hip surgery training plan",
+          "header.title": "FitSchema for hip recovery",
+          "header.subtitle":
+            "Create your exercises, tick them off per day, and review by week or month.",
+          "language.label": "Language",
+          "language.nl": "Dutch",
+          "language.en": "English",
+          "language.ru": "Russian",
+          "section.plan": "Add plan",
+          "section.daily": "Daily checklist",
+          "section.overview": "Overview",
+          "section.data": "Data",
+          "form.exerciseName": "Exercise name",
+          "form.exerciseType": "Type",
+          "form.repsPerSet": "Reps per set",
+          "form.holdSeconds": "Hold (sec)",
+          "form.durationMinutes": "Session length (min)",
+          "form.sessionsPerDay": "Times per day",
+          "form.notes": "Notes",
+          "form.painScore": "Pain score (0-10)",
+          "form.mobilityScore": "Mobility (1-5)",
+          "form.minutesSpent": "Time spent (minutes)",
+          "form.dailyNotes": "Daily notes",
+          "placeholder.exerciseName": "e.g. hip flexion",
+          "placeholder.notes": "Optional",
+          "placeholder.dailyNote": "What felt good or difficult?",
+          "exerciseType.hold": "Reps + hold seconds",
+          "exerciseType.simple": "Reps only",
+          "exerciseType.duration": "Session length (minutes)",
+          "button.add": "Add",
+          "button.save": "Save",
+          "button.cancel": "Cancel",
+          "button.today": "Today",
+          "button.saveDay": "Save day",
+          "button.complete": "Complete",
+          "button.timer": "Timer",
+          "button.export": "Export",
+          "button.clear": "Clear all",
+          "button.import": "Import",
+          "button.download": "Download",
+          "button.close": "Close",
+          "button.edit": "Edit",
+          "button.delete": "Delete",
+          "tab.day": "Day",
+          "tab.week": "Week",
+          "tab.month": "Month",
+          "daily.tip": 'Tip: click "Complete" to mark all sessions for that exercise.',
+          "daily.summary.complete": "Day complete",
+          "daily.summary.sessions": "Sessions done",
+          "daily.summary.streak": "Days in a row",
+          "daily.none": "Add exercises first to check them off.",
+          "daily.extraSessions": "Extra sessions: {count}",
+          "overview.none": "Add exercises to see the overview.",
+          "overview.todayComplete": "Complete today",
+          "overview.weekAvg": "Weekly average",
+          "overview.monthAvg": "Monthly average",
+          "overview.selectDate": "Select another date to look back.",
+          "data.note": "Everything stays local in your browser. Export creates a backup file.",
+          "dialog.exportTitle": "Export",
+          "dialog.exportBody": "Your data is ready to download.",
+          "exercise.none": "No exercises added yet.",
+          "exercise.perDay": "{count}x per day",
+          "exercise.description.hold": "{reps}x, hold {hold}s",
+          "exercise.description.simple": "{reps}x per session",
+          "exercise.description.duration": "{minutes} min per session",
+          "timer.done": "done!",
+          "confirm.clearAll": "Are you sure you want to clear everything?",
+        },
+        ru: {
+          "app.title": "FitSchema - Тренировочный план после операции на бедре",
+          "header.title": "FitSchema для восстановления бедра",
+          "header.subtitle":
+            "Создайте упражнения, отмечайте их по дням и смотрите прогресс по неделям или месяцам.",
+          "language.label": "Язык",
+          "language.nl": "Нидерландский",
+          "language.en": "Английский",
+          "language.ru": "Русский",
+          "section.plan": "Добавить план",
+          "section.daily": "Ежедневный чек-лист",
+          "section.overview": "Обзор",
+          "section.data": "Данные",
+          "form.exerciseName": "Название упражнения",
+          "form.exerciseType": "Тип",
+          "form.repsPerSet": "Повторов за подход",
+          "form.holdSeconds": "Удержание (сек)",
+          "form.durationMinutes": "Длительность занятия (мин)",
+          "form.sessionsPerDay": "Сколько раз в день",
+          "form.notes": "Заметки",
+          "form.painScore": "Боль (0-10)",
+          "form.mobilityScore": "Подвижность (1-5)",
+          "form.minutesSpent": "Время (минуты)",
+          "form.dailyNotes": "Заметки дня",
+          "placeholder.exerciseName": "например, сгибание бедра",
+          "placeholder.notes": "Необязательно",
+          "placeholder.dailyNote": "Что было хорошо или сложно?",
+          "exerciseType.hold": "Повторы + удержание (сек)",
+          "exerciseType.simple": "Только повторы",
+          "exerciseType.duration": "Длительность занятия (минуты)",
+          "button.add": "Добавить",
+          "button.save": "Сохранить",
+          "button.cancel": "Отмена",
+          "button.today": "Сегодня",
+          "button.saveDay": "Сохранить день",
+          "button.complete": "Завершить",
+          "button.timer": "Таймер",
+          "button.export": "Экспорт",
+          "button.clear": "Очистить все",
+          "button.import": "Импорт",
+          "button.download": "Скачать",
+          "button.close": "Закрыть",
+          "button.edit": "Редактировать",
+          "button.delete": "Удалить",
+          "tab.day": "День",
+          "tab.week": "Неделя",
+          "tab.month": "Месяц",
+          "daily.tip": 'Совет: нажмите "Завершить", чтобы отметить все подходы по упражнению.',
+          "daily.summary.complete": "День выполнен",
+          "daily.summary.sessions": "Сделано подходов",
+          "daily.summary.streak": "Дней подряд",
+          "daily.none": "Сначала добавьте упражнения, чтобы отмечать их.",
+          "daily.extraSessions": "Доп. подходы: {count}",
+          "overview.none": "Добавьте упражнения, чтобы видеть обзор.",
+          "overview.todayComplete": "Выполнено сегодня",
+          "overview.weekAvg": "Среднее за неделю",
+          "overview.monthAvg": "Среднее за месяц",
+          "overview.selectDate": "Выберите другую дату, чтобы посмотреть назад.",
+          "data.note": "Все данные остаются в вашем браузере. Экспорт создает резервную копию.",
+          "dialog.exportTitle": "Экспорт",
+          "dialog.exportBody": "Ваши данные готовы к скачиванию.",
+          "exercise.none": "Пока нет добавленных упражнений.",
+          "exercise.perDay": "{count}x в день",
+          "exercise.description.hold": "{reps}x, удержание {hold} сек",
+          "exercise.description.simple": "{reps}x за подход",
+          "exercise.description.duration": "{minutes} мин за занятие",
+          "timer.done": "готово!",
+          "confirm.clearAll": "Вы уверены, что хотите все очистить?",
+        },
       };
 
       init();
 
       function init() {
+        state.language = state.language || "nl";
+        el.languageSelect.value = state.language;
         el.selectedDate.value = state.selectedDate;
         bindEvents();
+        applyLanguage();
         renderAll();
       }
 
@@ -628,6 +909,12 @@
         el.downloadExport.addEventListener("click", downloadExport);
         el.importFile.addEventListener("change", importData);
         el.clearBtn.addEventListener("click", clearAll);
+        el.languageSelect.addEventListener("change", () => {
+          state.language = el.languageSelect.value;
+          saveState();
+          applyLanguage();
+          renderAll();
+        });
       }
 
       function loadState() {
@@ -636,6 +923,7 @@
           logs: {},
           selectedDate: todayISO(),
           view: "day",
+          language: "nl",
         };
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
@@ -688,7 +976,7 @@
         el.hold.value = 5;
         el.duration.value = 10;
         el.sessions.value = 3;
-        el.saveBtn.textContent = "Toevoegen";
+        updateSaveButtonLabel();
         toggleHoldField();
       }
 
@@ -735,7 +1023,7 @@
           el.duration.value = exercise.durationMinutes || 10;
           el.sessions.value = exercise.sessionsPerDay;
           el.notes.value = exercise.notes || "";
-          el.saveBtn.textContent = "Opslaan";
+          updateSaveButtonLabel();
           toggleHoldField();
           return;
         }
@@ -812,27 +1100,26 @@
 
       function renderExerciseList() {
         if (!state.exercises.length) {
-          el.list.innerHTML =
-            "<p class='inline-note'>Nog geen oefeningen toegevoegd.</p>";
+          el.list.innerHTML = `<p class='inline-note'>${t("exercise.none")}</p>`;
           return;
         }
         el.list.innerHTML = state.exercises
           .map((exercise) => {
-            const description =
-              exercise.mode === "hold"
-                ? `${exercise.reps}x, ${exercise.holdSeconds}s vasthouden`
-                : exercise.mode === "duration"
-                  ? `${exercise.durationMinutes} min per sessie`
-                : `${exercise.reps}x per sessie`;
+            const description = getExerciseDescription(exercise);
+            const perDay = t("exercise.perDay", { count: exercise.sessionsPerDay });
             const notes = exercise.notes ? `<p>${exercise.notes}</p>` : "";
             return `
               <div class="exercise-card">
                 <h3>${escapeHtml(exercise.name)}</h3>
-                <p>${description} - ${exercise.sessionsPerDay}x per dag</p>
+                <p>${description} - ${perDay}</p>
                 ${notes}
                 <div class="row">
-                  <button type="button" class="ghost" data-action="edit" data-id="${exercise.id}">Bewerk</button>
-                  <button type="button" class="ghost" data-action="delete" data-id="${exercise.id}">Verwijder</button>
+                  <button type="button" class="ghost" data-action="edit" data-id="${exercise.id}">
+                    ${t("button.edit")}
+                  </button>
+                  <button type="button" class="ghost" data-action="delete" data-id="${exercise.id}">
+                    ${t("button.delete")}
+                  </button>
                 </div>
               </div>
             `;
@@ -853,21 +1140,21 @@
         el.dailySummary.innerHTML = `
           <div class="summary-card">
             <strong>${totals.percent}%</strong>
-            Dag compleet
+            ${t("daily.summary.complete")}
           </div>
           <div class="summary-card">
             <strong>${totals.completed}/${totals.target}</strong>
-            Sessies gedaan
+            ${t("daily.summary.sessions")}
           </div>
           <div class="summary-card">
             <strong>${totals.streak}</strong>
-            Dagen op rij
+            ${t("daily.summary.streak")}
           </div>
         `;
 
         if (!state.exercises.length) {
           el.dailyList.innerHTML =
-            "<p class='inline-note'>Voeg eerst oefeningen toe om af te vinken.</p>";
+            `<p class='inline-note'>${t("daily.none")}</p>`;
           return;
         }
 
@@ -879,20 +1166,18 @@
             const percent = Math.round((cappedCompleted / target) * 100) || 0;
             const extraNote =
               entry.completed > target
-                ? `<div class="daily-item-meta">Extra sessies: ${entry.completed - target}</div>`
+                ? `<div class="daily-item-meta">${t("daily.extraSessions", {
+                    count: entry.completed - target,
+                  })}</div>`
                 : "";
-            const description =
-              exercise.mode === "hold"
-                ? `${exercise.reps}x, ${exercise.holdSeconds}s vasthouden`
-                : exercise.mode === "duration"
-                  ? `${exercise.durationMinutes} min per sessie`
-                : `${exercise.reps}x per sessie`;
+            const description = getExerciseDescription(exercise);
+            const perDay = t("exercise.perDay", { count: target });
             return `
               <div class="daily-item">
                 <div class="daily-item-header">
                   <div>
                     <div class="daily-item-title">${escapeHtml(exercise.name)}</div>
-                    <div class="daily-item-meta">${description} - ${target}x per dag</div>
+                    <div class="daily-item-meta">${description} - ${perDay}</div>
                     ${extraNote}
                   </div>
                   <div class="count-badge">${cappedCompleted}/${target}</div>
@@ -900,10 +1185,14 @@
                 <div class="daily-actions">
                   <button type="button" class="ghost" data-action="dec" data-id="${exercise.id}">-</button>
                   <button type="button" class="ghost" data-action="inc" data-id="${exercise.id}">+</button>
-                  <button type="button" class="fill" data-action="done" data-id="${exercise.id}">Voltooi</button>
+                  <button type="button" class="fill" data-action="done" data-id="${exercise.id}">
+                    ${t("button.complete")}
+                  </button>
                   ${
                     exercise.mode === "hold" || exercise.mode === "duration"
-                      ? `<button type="button" class="ghost" data-action="timer" data-id="${exercise.id}">Timer</button>`
+                      ? `<button type="button" class="ghost" data-action="timer" data-id="${exercise.id}">
+                          ${t("button.timer")}
+                        </button>`
                       : ""
                   }
                 </div>
@@ -923,7 +1212,7 @@
 
         if (!state.exercises.length) {
           el.overview.innerHTML =
-            "<p class='inline-note'>Voeg oefeningen toe om overzicht te zien.</p>";
+            `<p class='inline-note'>${t("overview.none")}</p>`;
           return;
         }
 
@@ -933,18 +1222,18 @@
             <div class="summary-grid">
               <div class="summary-card">
                 <strong>${totals.percent}%</strong>
-                Compleet vandaag
+                ${t("overview.todayComplete")}
               </div>
               <div class="summary-card">
                 <strong>${totals.week}%</strong>
-                Gemiddeld week
+                ${t("overview.weekAvg")}
               </div>
               <div class="summary-card">
                 <strong>${totals.month}%</strong>
-                Gemiddeld maand
+                ${t("overview.monthAvg")}
               </div>
             </div>
-            <p class="inline-note">Selecteer een andere datum om terug te kijken.</p>
+            <p class="inline-note">${t("overview.selectDate")}</p>
           `;
           return;
         }
@@ -1047,7 +1336,7 @@
           if (remaining <= 0) {
             clearInterval(activeTimer);
             activeTimer = null;
-            el.timerPanel.textContent = `${name}: klaar!`;
+            el.timerPanel.textContent = `${name}: ${t("timer.done")}`;
             return;
           }
           el.timerPanel.textContent = `${name}: ${formatTimer(remaining)}`;
@@ -1079,7 +1368,10 @@
             state.logs = parsed.logs;
             state.selectedDate = parsed.selectedDate || todayISO();
             state.view = parsed.view || "day";
+            state.language = parsed.language || state.language || "nl";
+            el.languageSelect.value = state.language;
             saveState();
+            applyLanguage();
             renderAll();
           } catch (err) {
             return;
@@ -1090,7 +1382,7 @@
       }
 
       function clearAll() {
-        if (!confirm("Weet je zeker dat je alles wilt wissen?")) return;
+        if (!confirm(t("confirm.clearAll"))) return;
         state.exercises = [];
         state.logs = {};
         state.selectedDate = todayISO();
@@ -1153,6 +1445,47 @@
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = String(totalSeconds % 60).padStart(2, "0");
         return `${minutes}:${seconds}`;
+      }
+
+      function applyLanguage() {
+        document.documentElement.lang = state.language;
+        document.title = t("app.title");
+        document.querySelectorAll("[data-i18n]").forEach((node) => {
+          const key = node.dataset.i18n;
+          node.textContent = t(key);
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+          const key = node.dataset.i18nPlaceholder;
+          node.setAttribute("placeholder", t(key));
+        });
+        updateSaveButtonLabel();
+      }
+
+      function updateSaveButtonLabel() {
+        el.saveBtn.textContent = editingId ? t("button.save") : t("button.add");
+      }
+
+      function t(key, vars = {}) {
+        const catalog = translations[state.language] || translations.nl;
+        const template = catalog[key] || translations.nl[key] || key;
+        return template.replace(/\{(\w+)\}/g, (_, name) =>
+          Object.prototype.hasOwnProperty.call(vars, name) ? vars[name] : `{${name}}`
+        );
+      }
+
+      function getExerciseDescription(exercise) {
+        if (exercise.mode === "hold") {
+          return t("exercise.description.hold", {
+            reps: exercise.reps,
+            hold: exercise.holdSeconds,
+          });
+        }
+        if (exercise.mode === "duration") {
+          return t("exercise.description.duration", {
+            minutes: exercise.durationMinutes,
+          });
+        }
+        return t("exercise.description.simple", { reps: exercise.reps });
       }
 
       toggleHoldField();
