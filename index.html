@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FitSchema - Heupoperatie trainingsschema</title>
+    <style>
+      :root {
+        --bg-1: #f6efe7;
+        --bg-2: #e4f2ee;
+        --ink: #1f2a2c;
+        --muted: #5d6a6d;
+        --accent: #c26e3a;
+        --accent-2: #2f7b6f;
+        --card: #fffaf4;
+        --line: rgba(31, 42, 44, 0.12);
+        --good: #2f7b6f;
+        --warn: #c26e3a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(194, 110, 58, 0.14), transparent 55%),
+          radial-gradient(circle at 10% 70%, rgba(47, 123, 111, 0.2), transparent 40%),
+          linear-gradient(120deg, var(--bg-1), var(--bg-2));
+        min-height: 100vh;
+      }
+
+      header {
+        padding: 40px 24px 12px;
+        text-align: center;
+        animation: fadeIn 0.8s ease-out both;
+      }
+
+      header h1 {
+        font-family: "Palatino Linotype", "Book Antiqua", serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        margin: 0 0 8px;
+        letter-spacing: 0.02em;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .app {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        padding: 20px 24px 40px;
+        align-items: start;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 26px rgba(31, 42, 44, 0.08);
+        animation: slideUp 0.7s ease-out both;
+      }
+
+      .card:nth-of-type(2) {
+        animation-delay: 0.12s;
+      }
+
+      .card:nth-of-type(3) {
+        animation-delay: 0.22s;
+      }
+
+      .card:nth-of-type(4) {
+        animation-delay: 0.3s;
+      }
+
+      .card h2 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+      }
+
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        font-family: inherit;
+        font-size: 0.95rem;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+      }
+
+      textarea {
+        min-height: 72px;
+        resize: vertical;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        background: var(--accent);
+        color: white;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(194, 110, 58, 0.2);
+      }
+
+      button.ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        padding: 8px 12px;
+      }
+
+      button.fill {
+        background: var(--accent-2);
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .exercise-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .exercise-card {
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px dashed var(--line);
+        background: #ffffff;
+      }
+
+      .exercise-card h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+
+      .exercise-card p {
+        margin: 4px 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .exercise-card .row {
+        justify-content: flex-end;
+      }
+
+      .date-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .daily-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .daily-item {
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+        display: grid;
+        gap: 10px;
+      }
+
+      .daily-item-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .daily-item-title {
+        font-weight: 600;
+      }
+
+      .daily-item-meta {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .daily-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .count-badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(47, 123, 111, 0.12);
+        font-weight: 600;
+      }
+
+      .progress {
+        height: 8px;
+        background: rgba(31, 42, 44, 0.08);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        width: 0%;
+      }
+
+      .summary-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        margin: 12px 0;
+      }
+
+      .summary-card {
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+        text-align: center;
+      }
+
+      .summary-card strong {
+        display: block;
+        font-size: 1.1rem;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+
+      .tabs button {
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .tabs button.active {
+        background: var(--ink);
+        color: white;
+      }
+
+      .calendar-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+
+      .calendar-cell {
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: #ffffff;
+      }
+
+      .calendar-cell small {
+        color: var(--muted);
+        display: block;
+      }
+
+      .calendar-cell strong {
+        font-size: 1rem;
+      }
+
+      .calendar-cell .bar {
+        margin-top: 6px;
+        height: 6px;
+        background: rgba(31, 42, 44, 0.1);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .calendar-cell .bar span {
+        display: block;
+        height: 100%;
+        background: var(--accent-2);
+        width: 0%;
+      }
+
+      .calendar-cell.complete {
+        border-color: rgba(47, 123, 111, 0.5);
+        background: rgba(47, 123, 111, 0.08);
+      }
+
+      .inline-note {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 10px;
+      }
+
+      .timer-panel {
+        display: none;
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(47, 123, 111, 0.08);
+        font-weight: 600;
+      }
+
+      .data-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .file-input {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .file-input input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      dialog {
+        border: none;
+        border-radius: 16px;
+        padding: 16px;
+        width: min(520px, 90vw);
+      }
+
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 640px) {
+        header {
+          text-align: left;
+        }
+
+        .app {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>FitSchema voor heupherstel</h1>
+      <p>Maak je oefeningen, vink per dag af, en kijk terug per week of maand.</p>
+    </header>
+
+    <div class="app">
+      <section class="card">
+        <h2>Schema invoeren</h2>
+        <form id="exercise-form">
+          <div class="row">
+            <label style="flex: 1">
+              Naam oefening
+              <input id="exercise-name" type="text" required placeholder="Bijv. heupflexie" />
+            </label>
+          </div>
+          <div class="row">
+            <label style="flex: 1">
+              Type
+              <select id="exercise-mode">
+                <option value="hold">Aantal per keer + seconden vasthouden</option>
+                <option value="simple">Alleen aantal per keer</option>
+                <option value="duration">Duur per sessie (minuten)</option>
+              </select>
+            </label>
+            <label id="reps-field" style="flex: 1">
+              Aantal per keer
+              <input id="exercise-reps" type="number" min="1" value="10" required />
+            </label>
+            <label id="hold-field" style="flex: 1">
+              Vasthouden (sec)
+              <input id="exercise-hold" type="number" min="1" value="5" />
+            </label>
+            <label id="duration-field" style="flex: 1">
+              Duur per sessie (min)
+              <input id="exercise-duration" type="number" min="1" value="10" />
+            </label>
+          </div>
+          <div class="row">
+            <label style="flex: 1">
+              Hoe vaak per dag
+              <input id="exercise-sessions" type="number" min="1" value="3" required />
+            </label>
+            <label style="flex: 1">
+              Notities
+              <input id="exercise-notes" type="text" placeholder="Optioneel" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="save-exercise">Toevoegen</button>
+            <button type="button" class="ghost" id="reset-form">Annuleren</button>
+          </div>
+        </form>
+
+        <div class="exercise-list" id="exercise-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Dagelijkse checklist</h2>
+        <div class="date-row">
+          <input id="selected-date" type="date" />
+          <button type="button" class="ghost" id="today-btn">Vandaag</button>
+        </div>
+        <div class="summary-grid" id="daily-summary"></div>
+        <div class="daily-list" id="daily-list"></div>
+        <div class="timer-panel" id="timer-panel"></div>
+        <div class="inline-note">
+          Tip: klik op "Voltooi" om alle sessies voor die oefening af te vinken.
+        </div>
+        <div class="row" style="margin-top: 16px">
+          <label style="flex: 1">
+            Pijnscore (0-10)
+            <input id="pain-score" type="range" min="0" max="10" value="0" />
+            <span id="pain-value">0</span>
+          </label>
+          <label style="flex: 1">
+            Beweeglijkheid (1-5)
+            <input id="mobility-score" type="range" min="1" max="5" value="3" />
+            <span id="mobility-value">3</span>
+          </label>
+        </div>
+        <div class="row">
+          <label style="flex: 1">
+            Tijd besteed (minuten)
+            <input id="minutes-spent" type="number" min="0" value="0" />
+          </label>
+        </div>
+        <label>
+          Dagnotities
+          <textarea id="daily-note" placeholder="Wat ging goed of moeilijk?"></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="button" id="save-daily">Opslaan dag</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Overzicht</h2>
+        <div class="tabs">
+          <button type="button" class="active" data-view="day">Dag</button>
+          <button type="button" data-view="week">Week</button>
+          <button type="button" data-view="month">Maand</button>
+        </div>
+        <div id="overview"></div>
+      </section>
+
+      <section class="card">
+        <h2>Data</h2>
+        <div class="data-actions">
+          <button type="button" id="export-btn">Export</button>
+          <button type="button" class="ghost" id="clear-btn">Wis alles</button>
+          <button type="button" class="ghost file-input">
+            Import
+            <input id="import-file" type="file" accept="application/json" />
+          </button>
+        </div>
+        <p class="inline-note">
+          Alles blijft lokaal in je browser. Export maakt een back-up bestand.
+        </p>
+      </section>
+    </div>
+
+    <dialog id="export-dialog">
+      <h3>Export</h3>
+      <p>Je data is klaar om te downloaden.</p>
+      <div class="form-actions">
+        <button type="button" id="download-export">Download</button>
+        <button type="button" class="ghost" id="close-export">Sluiten</button>
+      </div>
+    </dialog>
+
+    <script>
+      const STORAGE_KEY = "fitschema.v1";
+
+      const state = loadState();
+      let editingId = null;
+      let activeTimer = null;
+
+      const el = {
+        form: document.getElementById("exercise-form"),
+        name: document.getElementById("exercise-name"),
+        mode: document.getElementById("exercise-mode"),
+        reps: document.getElementById("exercise-reps"),
+        hold: document.getElementById("exercise-hold"),
+        holdField: document.getElementById("hold-field"),
+        duration: document.getElementById("exercise-duration"),
+        durationField: document.getElementById("duration-field"),
+        repsField: document.getElementById("reps-field"),
+        sessions: document.getElementById("exercise-sessions"),
+        notes: document.getElementById("exercise-notes"),
+        saveBtn: document.getElementById("save-exercise"),
+        resetBtn: document.getElementById("reset-form"),
+        list: document.getElementById("exercise-list"),
+        selectedDate: document.getElementById("selected-date"),
+        todayBtn: document.getElementById("today-btn"),
+        dailyList: document.getElementById("daily-list"),
+        dailySummary: document.getElementById("daily-summary"),
+        pain: document.getElementById("pain-score"),
+        painValue: document.getElementById("pain-value"),
+        mobility: document.getElementById("mobility-score"),
+        mobilityValue: document.getElementById("mobility-value"),
+        minutes: document.getElementById("minutes-spent"),
+        note: document.getElementById("daily-note"),
+        saveDaily: document.getElementById("save-daily"),
+        timerPanel: document.getElementById("timer-panel"),
+        tabs: document.querySelectorAll(".tabs button"),
+        overview: document.getElementById("overview"),
+        exportBtn: document.getElementById("export-btn"),
+        exportDialog: document.getElementById("export-dialog"),
+        downloadExport: document.getElementById("download-export"),
+        closeExport: document.getElementById("close-export"),
+        importFile: document.getElementById("import-file"),
+        clearBtn: document.getElementById("clear-btn"),
+      };
+
+      init();
+
+      function init() {
+        el.selectedDate.value = state.selectedDate;
+        bindEvents();
+        renderAll();
+      }
+
+      function bindEvents() {
+        el.mode.addEventListener("change", toggleHoldField);
+        el.form.addEventListener("submit", handleSaveExercise);
+        el.resetBtn.addEventListener("click", resetForm);
+        el.list.addEventListener("click", handleExerciseListClick);
+        el.selectedDate.addEventListener("change", () => {
+          state.selectedDate = el.selectedDate.value;
+          saveState();
+          renderAll();
+        });
+        el.todayBtn.addEventListener("click", () => {
+          state.selectedDate = todayISO();
+          el.selectedDate.value = state.selectedDate;
+          saveState();
+          renderAll();
+        });
+        el.dailyList.addEventListener("click", handleDailyAction);
+        el.pain.addEventListener("input", () => {
+          el.painValue.textContent = el.pain.value;
+        });
+        el.mobility.addEventListener("input", () => {
+          el.mobilityValue.textContent = el.mobility.value;
+        });
+        el.saveDaily.addEventListener("click", saveDailyNote);
+        el.tabs.forEach((tab) =>
+          tab.addEventListener("click", () => {
+            state.view = tab.dataset.view;
+            saveState();
+            renderOverview();
+          })
+        );
+        el.exportBtn.addEventListener("click", () => {
+          el.exportDialog.showModal();
+        });
+        el.closeExport.addEventListener("click", () => {
+          el.exportDialog.close();
+        });
+        el.downloadExport.addEventListener("click", downloadExport);
+        el.importFile.addEventListener("change", importData);
+        el.clearBtn.addEventListener("click", clearAll);
+      }
+
+      function loadState() {
+        const fallback = {
+          exercises: [],
+          logs: {},
+          selectedDate: todayISO(),
+          view: "day",
+        };
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return fallback;
+          const parsed = JSON.parse(raw);
+          return { ...fallback, ...parsed };
+        } catch (err) {
+          return fallback;
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function todayISO() {
+        const now = new Date();
+        return now.toISOString().slice(0, 10);
+      }
+
+      function toggleHoldField() {
+        if (el.mode.value === "hold") {
+          el.holdField.style.display = "flex";
+          el.durationField.style.display = "none";
+          el.repsField.style.display = "flex";
+          el.reps.required = true;
+          el.duration.required = false;
+          return;
+        }
+        if (el.mode.value === "duration") {
+          el.holdField.style.display = "none";
+          el.durationField.style.display = "flex";
+          el.repsField.style.display = "none";
+          el.reps.required = false;
+          el.duration.required = true;
+          return;
+        } else {
+          el.holdField.style.display = "none";
+          el.durationField.style.display = "none";
+          el.repsField.style.display = "flex";
+          el.reps.required = true;
+          el.duration.required = false;
+        }
+      }
+
+      function resetForm() {
+        editingId = null;
+        el.form.reset();
+        el.reps.value = 10;
+        el.hold.value = 5;
+        el.duration.value = 10;
+        el.sessions.value = 3;
+        el.saveBtn.textContent = "Toevoegen";
+        toggleHoldField();
+      }
+
+      function handleSaveExercise(event) {
+        event.preventDefault();
+        const exercise = {
+          id: editingId || Date.now().toString(36),
+          name: el.name.value.trim(),
+          mode: el.mode.value,
+          reps: el.mode.value === "duration" ? 0 : Number(el.reps.value),
+          holdSeconds: el.mode.value === "hold" ? Number(el.hold.value) : 0,
+          durationMinutes: el.mode.value === "duration" ? Number(el.duration.value) : 0,
+          sessionsPerDay: Number(el.sessions.value),
+          notes: el.notes.value.trim(),
+        };
+
+        if (!exercise.name) return;
+
+        if (editingId) {
+          state.exercises = state.exercises.map((item) =>
+            item.id === editingId ? exercise : item
+          );
+        } else {
+          state.exercises.push(exercise);
+        }
+
+        saveState();
+        resetForm();
+        renderAll();
+      }
+
+      function handleExerciseListClick(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const id = button.dataset.id;
+        if (button.dataset.action === "edit") {
+          const exercise = state.exercises.find((item) => item.id === id);
+          if (!exercise) return;
+          editingId = exercise.id;
+          el.name.value = exercise.name;
+          el.mode.value = exercise.mode;
+          el.reps.value = exercise.reps;
+          el.hold.value = exercise.holdSeconds || 5;
+          el.duration.value = exercise.durationMinutes || 10;
+          el.sessions.value = exercise.sessionsPerDay;
+          el.notes.value = exercise.notes || "";
+          el.saveBtn.textContent = "Opslaan";
+          toggleHoldField();
+          return;
+        }
+        if (button.dataset.action === "delete") {
+          state.exercises = state.exercises.filter((item) => item.id !== id);
+          Object.values(state.logs).forEach((log) => {
+            if (log.exercises) delete log.exercises[id];
+          });
+          saveState();
+          renderAll();
+        }
+      }
+
+      function getLog(date) {
+        if (!state.logs[date]) {
+          state.logs[date] = {
+            exercises: {},
+            pain: 0,
+            mobility: 3,
+            minutes: 0,
+            note: "",
+          };
+        }
+        return state.logs[date];
+      }
+
+      function handleDailyAction(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const action = button.dataset.action;
+        const id = button.dataset.id;
+        const exercise = state.exercises.find((item) => item.id === id);
+        if (!exercise) return;
+        const log = getLog(state.selectedDate);
+        const entry = log.exercises[id] || { completed: 0 };
+        const target = exercise.sessionsPerDay;
+        if (action === "inc") {
+          entry.completed = Math.min(target, entry.completed + 1);
+        }
+        if (action === "dec") {
+          entry.completed = Math.max(0, entry.completed - 1);
+        }
+        if (action === "done") {
+          entry.completed = target;
+        }
+        if (action === "timer") {
+          const seconds =
+            exercise.mode === "duration"
+              ? exercise.durationMinutes * 60
+              : exercise.holdSeconds;
+          startTimer(seconds, exercise.name);
+          return;
+        }
+        log.exercises[id] = entry;
+        saveState();
+        renderAll();
+      }
+
+      function saveDailyNote() {
+        const log = getLog(state.selectedDate);
+        log.pain = Number(el.pain.value);
+        log.mobility = Number(el.mobility.value);
+        log.minutes = Number(el.minutes.value);
+        log.note = el.note.value.trim();
+        saveState();
+        renderAll();
+      }
+
+      function renderAll() {
+        renderExerciseList();
+        renderDaily();
+        renderOverview();
+      }
+
+      function renderExerciseList() {
+        if (!state.exercises.length) {
+          el.list.innerHTML =
+            "<p class='inline-note'>Nog geen oefeningen toegevoegd.</p>";
+          return;
+        }
+        el.list.innerHTML = state.exercises
+          .map((exercise) => {
+            const description =
+              exercise.mode === "hold"
+                ? `${exercise.reps}x, ${exercise.holdSeconds}s vasthouden`
+                : exercise.mode === "duration"
+                  ? `${exercise.durationMinutes} min per sessie`
+                : `${exercise.reps}x per sessie`;
+            const notes = exercise.notes ? `<p>${exercise.notes}</p>` : "";
+            return `
+              <div class="exercise-card">
+                <h3>${escapeHtml(exercise.name)}</h3>
+                <p>${description} - ${exercise.sessionsPerDay}x per dag</p>
+                ${notes}
+                <div class="row">
+                  <button type="button" class="ghost" data-action="edit" data-id="${exercise.id}">Bewerk</button>
+                  <button type="button" class="ghost" data-action="delete" data-id="${exercise.id}">Verwijder</button>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderDaily() {
+        const log = getLog(state.selectedDate);
+        el.pain.value = log.pain || 0;
+        el.painValue.textContent = log.pain || 0;
+        el.mobility.value = log.mobility || 3;
+        el.mobilityValue.textContent = log.mobility || 3;
+        el.minutes.value = log.minutes || 0;
+        el.note.value = log.note || "";
+
+        const totals = calculateTotals(state.selectedDate);
+        el.dailySummary.innerHTML = `
+          <div class="summary-card">
+            <strong>${totals.percent}%</strong>
+            Dag compleet
+          </div>
+          <div class="summary-card">
+            <strong>${totals.completed}/${totals.target}</strong>
+            Sessies gedaan
+          </div>
+          <div class="summary-card">
+            <strong>${totals.streak}</strong>
+            Dagen op rij
+          </div>
+        `;
+
+        if (!state.exercises.length) {
+          el.dailyList.innerHTML =
+            "<p class='inline-note'>Voeg eerst oefeningen toe om af te vinken.</p>";
+          return;
+        }
+
+        el.dailyList.innerHTML = state.exercises
+          .map((exercise) => {
+            const entry = log.exercises[exercise.id] || { completed: 0 };
+            const target = exercise.sessionsPerDay;
+            const cappedCompleted = Math.min(entry.completed, target);
+            const percent = Math.round((cappedCompleted / target) * 100) || 0;
+            const extraNote =
+              entry.completed > target
+                ? `<div class="daily-item-meta">Extra sessies: ${entry.completed - target}</div>`
+                : "";
+            const description =
+              exercise.mode === "hold"
+                ? `${exercise.reps}x, ${exercise.holdSeconds}s vasthouden`
+                : exercise.mode === "duration"
+                  ? `${exercise.durationMinutes} min per sessie`
+                : `${exercise.reps}x per sessie`;
+            return `
+              <div class="daily-item">
+                <div class="daily-item-header">
+                  <div>
+                    <div class="daily-item-title">${escapeHtml(exercise.name)}</div>
+                    <div class="daily-item-meta">${description} - ${target}x per dag</div>
+                    ${extraNote}
+                  </div>
+                  <div class="count-badge">${cappedCompleted}/${target}</div>
+                </div>
+                <div class="daily-actions">
+                  <button type="button" class="ghost" data-action="dec" data-id="${exercise.id}">-</button>
+                  <button type="button" class="ghost" data-action="inc" data-id="${exercise.id}">+</button>
+                  <button type="button" class="fill" data-action="done" data-id="${exercise.id}">Voltooi</button>
+                  ${
+                    exercise.mode === "hold" || exercise.mode === "duration"
+                      ? `<button type="button" class="ghost" data-action="timer" data-id="${exercise.id}">Timer</button>`
+                      : ""
+                  }
+                </div>
+                <div class="progress">
+                  <span style="width:${percent}%"></span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderOverview() {
+        el.tabs.forEach((tab) => {
+          tab.classList.toggle("active", tab.dataset.view === state.view);
+        });
+
+        if (!state.exercises.length) {
+          el.overview.innerHTML =
+            "<p class='inline-note'>Voeg oefeningen toe om overzicht te zien.</p>";
+          return;
+        }
+
+        if (state.view === "day") {
+          const totals = calculateTotals(state.selectedDate);
+          el.overview.innerHTML = `
+            <div class="summary-grid">
+              <div class="summary-card">
+                <strong>${totals.percent}%</strong>
+                Compleet vandaag
+              </div>
+              <div class="summary-card">
+                <strong>${totals.week}%</strong>
+                Gemiddeld week
+              </div>
+              <div class="summary-card">
+                <strong>${totals.month}%</strong>
+                Gemiddeld maand
+              </div>
+            </div>
+            <p class="inline-note">Selecteer een andere datum om terug te kijken.</p>
+          `;
+          return;
+        }
+
+        if (state.view === "week") {
+          const start = startOfWeek(parseISO(state.selectedDate));
+          const days = Array.from({ length: 7 }).map((_, index) =>
+            addDays(start, index)
+          );
+          el.overview.innerHTML = `
+            <div class="calendar-grid">
+              ${days.map(renderCalendarCell).join("")}
+            </div>
+          `;
+          return;
+        }
+
+        if (state.view === "month") {
+          const date = parseISO(state.selectedDate);
+          const days = monthDays(date);
+          el.overview.innerHTML = `
+            <div class="calendar-grid">
+              ${days.map(renderCalendarCell).join("")}
+            </div>
+          `;
+        }
+      }
+
+      function renderCalendarCell(date) {
+        const iso = toISO(date);
+        const totals = calculateTotals(iso);
+        const className = totals.percent === 100 ? "calendar-cell complete" : "calendar-cell";
+        return `
+          <div class="${className}">
+            <small>${formatDateShort(date)}</small>
+            <strong>${totals.percent}%</strong>
+            <div class="bar"><span style="width:${totals.percent}%"></span></div>
+          </div>
+        `;
+      }
+
+      function calculateTotals(dateISO) {
+        const log = getLog(dateISO);
+        let target = 0;
+        let completed = 0;
+        state.exercises.forEach((exercise) => {
+          const entry = log.exercises[exercise.id] || { completed: 0 };
+          target += exercise.sessionsPerDay;
+          completed += Math.min(entry.completed, exercise.sessionsPerDay);
+        });
+        const percent = target ? Math.round((completed / target) * 100) : 0;
+        const week = averageForRange(dateISO, 7);
+        const month = averageForRange(dateISO, 30);
+        const streak = calculateStreak(dateISO);
+        return { target, completed, percent, week, month, streak };
+      }
+
+      function averageForRange(dateISO, days) {
+        const date = parseISO(dateISO);
+        let total = 0;
+        for (let i = 0; i < days; i += 1) {
+          const day = addDays(date, -i);
+          total += calculateDayPercent(toISO(day));
+        }
+        return Math.round(total / days);
+      }
+
+      function calculateDayPercent(dateISO) {
+        const log = getLog(dateISO);
+        let target = 0;
+        let completed = 0;
+        state.exercises.forEach((exercise) => {
+          const entry = log.exercises[exercise.id] || { completed: 0 };
+          target += exercise.sessionsPerDay;
+          completed += Math.min(entry.completed, exercise.sessionsPerDay);
+        });
+        return target ? Math.round((completed / target) * 100) : 0;
+      }
+
+      function calculateStreak(dateISO) {
+        let streak = 0;
+        let date = parseISO(dateISO);
+        while (true) {
+          const percent = calculateDayPercent(toISO(date));
+          if (percent < 100 || percent === 0) break;
+          streak += 1;
+          date = addDays(date, -1);
+        }
+        return streak;
+      }
+
+      function startTimer(seconds, name) {
+        if (!seconds) return;
+        if (activeTimer) clearInterval(activeTimer);
+        let remaining = seconds;
+        el.timerPanel.style.display = "block";
+        el.timerPanel.textContent = `${name}: ${formatTimer(remaining)}`;
+        activeTimer = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(activeTimer);
+            activeTimer = null;
+            el.timerPanel.textContent = `${name}: klaar!`;
+            return;
+          }
+          el.timerPanel.textContent = `${name}: ${formatTimer(remaining)}`;
+        }, 1000);
+      }
+
+      function downloadExport() {
+        const data = JSON.stringify(state, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `fitschema-${todayISO()}.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        el.exportDialog.close();
+      }
+
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            if (!parsed.exercises || !parsed.logs) {
+              return;
+            }
+            state.exercises = parsed.exercises;
+            state.logs = parsed.logs;
+            state.selectedDate = parsed.selectedDate || todayISO();
+            state.view = parsed.view || "day";
+            saveState();
+            renderAll();
+          } catch (err) {
+            return;
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      function clearAll() {
+        if (!confirm("Weet je zeker dat je alles wilt wissen?")) return;
+        state.exercises = [];
+        state.logs = {};
+        state.selectedDate = todayISO();
+        state.view = "day";
+        saveState();
+        renderAll();
+      }
+
+      function escapeHtml(value) {
+        return value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function parseISO(value) {
+        const [year, month, day] = value.split("-").map(Number);
+        return new Date(year, month - 1, day);
+      }
+
+      function toISO(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function addDays(date, amount) {
+        const copy = new Date(date);
+        copy.setDate(copy.getDate() + amount);
+        return copy;
+      }
+
+      function startOfWeek(date) {
+        const copy = new Date(date);
+        const day = copy.getDay();
+        const diff = (day === 0 ? -6 : 1) - day;
+        copy.setDate(copy.getDate() + diff);
+        return copy;
+      }
+
+      function monthDays(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        return Array.from({ length: lastDay }).map((_, index) => {
+          return new Date(year, month, index + 1);
+        });
+      }
+
+      function formatDateShort(date) {
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        return `${day}-${month}`;
+      }
+
+      function formatTimer(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = String(totalSeconds % 60).padStart(2, "0");
+        return `${minutes}:${seconds}`;
+      }
+
+      toggleHoldField();
+    </script>
+  </body>
+</html>
