@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FitSchema Pro - Weekplanner voor training</title>
+    <title>Programma Olga</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Finger+Paint&display=swap");
 
@@ -1047,8 +1047,7 @@
               <div class="section-head">
                 <div>
                   <div class="step-tag">Stap 1</div>
-                  <h2>Oefeningenbibliotheek</h2>
-                  <p>Voeg oefening toe.</p>
+                  <h2>Oefeningen</h2>
                 </div>
                 <div class="pill" id="library-count"></div>
               </div>
@@ -1061,7 +1060,7 @@
                       id="exercise-name"
                       type="text"
                       required
-                      placeholder="Bijv. external rotation, bridge hold, dead bug"
+                      placeholder="Bijv. bridge of leg press"
                     />
                   </label>
                 </div>
@@ -1109,19 +1108,19 @@
                 </div>
 
                 <label class="field">
-                  <span>Coach notitie</span>
+                  <span>Notitie</span>
                   <textarea
                     id="exercise-notes"
-                    placeholder="Techniekcue, tempo, regressie of aandachtspunt"
+                    placeholder="Optioneel"
                   ></textarea>
                 </label>
 
                 <div class="actions">
-                  <button type="submit" class="primary" id="save-exercise">Oefening opslaan</button>
+                  <button type="submit" class="primary" id="save-exercise">Opslaan</button>
                   <button type="button" class="ghost" id="reset-form">Reset</button>
                 </div>
                 <div class="auto-save-hint" id="exercise-auto-save-hint" hidden>
-                  Bij bewerken worden wijzigingen automatisch opgeslagen.
+                  Bewerken slaat direct op.
                 </div>
               </form>
 
@@ -1135,14 +1134,13 @@
                 <div>
                   <div class="step-tag">Stap 3</div>
                   <h2>Vandaag</h2>
-                  <p>Werk af en noteer kort.</p>
                 </div>
                 <div class="pill" id="selected-date-pill"></div>
               </div>
 
               <div class="date-toolbar">
                 <input id="selected-date" type="date" />
-                <button type="button" class="ghost" id="today-btn">Ga naar vandaag</button>
+                <button type="button" class="ghost" id="today-btn">Vandaag</button>
               </div>
 
               <div class="daily-log-shell" style="margin-top: 16px">
@@ -1152,16 +1150,16 @@
 
                 <div class="daily-note-card">
                   <label class="field">
-                    <span>Korte notitie</span>
+                    <span>Notitie</span>
                     <textarea
                       id="daily-note"
-                      placeholder="Korte observatie van vandaag"
+                      placeholder="Optioneel"
                     ></textarea>
                   </label>
                 </div>
 
                 <details class="daily-details">
-                  <summary>Extra daggegevens</summary>
+                  <summary>Extra</summary>
                   <div class="range-grid">
                     <div class="range-card">
                       <label class="field">
@@ -1188,9 +1186,9 @@
                 </details>
 
                 <div class="actions">
-                  <button type="button" class="ghost" id="save-daily">Nu opslaan</button>
+                  <button type="button" class="ghost" id="save-daily">Opslaan</button>
                 </div>
-                <div class="auto-save-hint">Wijzigingen worden automatisch opgeslagen.</div>
+                <div class="auto-save-hint">Slaat automatisch op.</div>
               </div>
             </div>
           </article>
@@ -1202,8 +1200,7 @@
               <div class="section-head">
                 <div>
                   <div class="step-tag">Stap 2</div>
-                  <h2>Weekplanner</h2>
-                  <p>Sleep niet, kies en voeg toe.</p>
+                  <h2>Week</h2>
                 </div>
                 <div class="pill" id="week-label"></div>
               </div>
@@ -1213,7 +1210,7 @@
                   <button type="button" class="ghost" id="prev-week">Vorige week</button>
                   <input id="planner-week" type="date" />
                   <button type="button" class="ghost" id="next-week">Volgende week</button>
-                  <button type="button" class="ghost" id="sync-selected-week">Week van vandaag</button>
+                  <button type="button" class="ghost" id="sync-selected-week">Deze week</button>
                 </div>
 
                 <div class="planner-toolbar">
@@ -1252,20 +1249,20 @@
                     <span>Notitie</span>
                     <textarea
                       id="planner-note"
-                      placeholder="Tempo, cue of aandachtspunt"
+                      placeholder="Optioneel"
                     ></textarea>
                   </label>
                 </div>
 
                 <div class="actions">
-                  <button type="button" class="primary" id="add-to-plan">Toevoegen aan dag</button>
+                  <button type="button" class="primary" id="add-to-plan">Toevoegen</button>
                   <button type="button" class="ghost" id="reset-plan-form">Reset</button>
-                  <button type="button" class="ghost" id="copy-previous-day">Kopieer gisteren</button>
+                  <button type="button" class="ghost" id="copy-previous-day">Gisteren</button>
                   <label class="field" style="max-width: 180px">
-                    <span>Kopieer datum</span>
+                    <span>Van datum</span>
                     <input id="copy-source-date" type="date" />
                   </label>
-                  <button type="button" class="ghost" id="copy-from-date">Kopieer gekozen dag</button>
+                  <button type="button" class="ghost" id="copy-from-date">Kopieer</button>
                 </div>
               </div>
 
@@ -1279,7 +1276,6 @@
                 <div class="section-head">
                   <div>
                     <h2>Overzicht</h2>
-                    <p>Korte voortgang.</p>
                   </div>
                 </div>
 
@@ -1298,7 +1294,6 @@
                 <div class="section-head">
                   <div>
                     <h2>Data</h2>
-                    <p>Export of opnieuw starten.</p>
                   </div>
                 </div>
 
@@ -1308,7 +1303,7 @@
                     Import
                     <input id="import-file" type="file" accept="application/json" />
                   </button>
-                  <button type="button" class="danger" id="clear-btn">Wis alles</button>
+                  <button type="button" class="danger" id="clear-btn">Wis</button>
                 </div>
               </div>
             </article>
@@ -1319,8 +1314,8 @@
 
     <dialog id="export-dialog">
       <div class="dialog-body">
-        <h3>Export klaar</h3>
-        <p>Je volledige bibliotheek, weekplannen en daglogs staan klaar als JSON-back-up.</p>
+        <h3>Export</h3>
+        <p>Download je back-up als JSON.</p>
         <div class="actions">
           <button type="button" class="primary" id="download-export">Download</button>
           <button type="button" class="ghost" id="close-export">Sluiten</button>
@@ -2043,7 +2038,7 @@
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           return true;
         } catch (error) {
-          showStatus("Opslaan in de browser is mislukt. Controleer opslagruimte of privacy-instellingen.", "error");
+          showStatus("Opslaan mislukt.", "error");
           return false;
         }
       }
@@ -2293,7 +2288,7 @@
                   }</option>`
               )
               .join("")
-          : `<option value="">Voeg eerst een oefening toe</option>`;
+          : `<option value="">Eerst een oefening</option>`;
 
         syncPlannerInputsFromExercise();
       }
@@ -2335,7 +2330,7 @@
         el.plannerNote.value = "";
         el.plannerWeight.value = 0;
         syncPlannerInputsFromExercise();
-        if (!keepStatus) showStatus("Planner-formulier gereset.", "info");
+        if (!keepStatus) showStatus("Planner gereset.", "info");
       }
 
       function readPlan(dateISO) {
@@ -2415,7 +2410,7 @@
           ensurePlan(dateISO).items = [];
           saveState();
           renderAll();
-          showStatus("Dagplanning leeggemaakt.", "success");
+          showStatus("Dag leeg.", "success");
           return;
         }
 
@@ -2459,7 +2454,7 @@
         log.note = el.note.value.trim();
         saveState();
         if (rerender) renderAll();
-        if (showFeedback) showStatus("Daglog opgeslagen.", "success");
+        if (showFeedback) showStatus("Opgeslagen.", "success");
       }
 
       function saveDailyLog() {
@@ -2556,7 +2551,7 @@
 
         if (!exercises.length) {
           el.exerciseList.innerHTML =
-            `<div class="empty">Nog leeg. Voeg je eerste oefening toe.</div>`;
+            `<div class="empty">Nog geen oefeningen.</div>`;
           return;
         }
 
@@ -2655,7 +2650,7 @@
                 Leeg
               </button>
             </div>
-            ${items || `<div class="empty" style="margin-top: 12px">Nog geen oefeningen ingepland.</div>`}
+            ${items || `<div class="empty" style="margin-top: 12px">Nog leeg.</div>`}
           </div>
         `;
       }
@@ -2694,7 +2689,7 @@
 
         if (!items.length) {
           el.dailyList.innerHTML =
-            `<div class="empty">Nog niets gepland voor deze dag.</div>`;
+            `<div class="empty">Geen planning.</div>`;
           return;
         }
 
@@ -2739,7 +2734,7 @@
 
         if (!hasAnyPlans()) {
           el.overview.innerHTML =
-            `<div class="empty">Hier verschijnt je voortgang zodra je plant.</div>`;
+            `<div class="empty">Nog geen overzicht.</div>`;
           return;
         }
 
@@ -2910,7 +2905,7 @@
         if (!file) return;
 
         if (file.type && file.type !== "application/json") {
-          showStatus("Import verwacht een JSON-bestand.", "error");
+          showStatus("Kies een JSON-bestand.", "error");
           event.target.value = "";
           return;
         }
@@ -2933,20 +2928,20 @@
             saveState();
             populatePlannerControls();
             renderAll();
-            showStatus("Import gelukt.", "success");
+            showStatus("Import klaar.", "success");
           } catch (error) {
-            showStatus("Import mislukt. Controleer of het bestand geldige FitSchema-JSON bevat.", "error");
+            showStatus("Import mislukt.", "error");
           }
         };
         reader.onerror = () => {
-          showStatus("Bestand kon niet worden gelezen.", "error");
+          showStatus("Lezen mislukt.", "error");
         };
         reader.readAsText(file);
         event.target.value = "";
       }
 
       function clearAll() {
-        if (!confirm("Weet je zeker dat je bibliotheek, weekplannen en logs wilt wissen?")) return;
+        if (!confirm("Alles wissen?")) return;
         state.exercises = [];
         state.plans = {};
         state.logs = {};
@@ -2961,7 +2956,7 @@
         populatePlannerControls();
         saveState();
         renderAll();
-        showStatus("Alle lokale gegevens zijn gewist.", "success");
+        showStatus("Alles gewist.", "success");
       }
     </script>
   </body>
