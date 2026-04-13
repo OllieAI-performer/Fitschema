@@ -1251,7 +1251,7 @@
     </dialog>
 
     <script>
-      const STORAGE_KEY = "fitschema.v4.fresh-start";
+      const STORAGE_KEY = "fitschema.v5.program-week-2026-04-13";
       const LEGACY_STORAGE_KEYS = ["fitschema.v3"];
       const CATEGORY_LABELS = {
         hip: "Heup",
@@ -1345,10 +1345,11 @@
 
       function createFallbackState() {
         const selectedDate = todayISO();
+        const starter = createStarterProgram(selectedDate);
         return {
-          exercises: [],
-          plans: {},
-          logs: {},
+          exercises: starter.exercises,
+          plans: starter.plans,
+          logs: starter.logs,
           selectedDate,
           plannerWeekStart: toISO(startOfWeek(parseISO(selectedDate))),
           view: "day",
@@ -1362,6 +1363,183 @@
           mobility: 3,
           minutes: 0,
           note: "",
+        };
+      }
+
+      function createStarterProgram(selectedDate) {
+        const mondayISO = selectedDate;
+        const wednesdayISO = addDaysISO(mondayISO, 2);
+        const thursdayISO = addDaysISO(mondayISO, 3);
+
+        const exercises = [
+          {
+            id: "ex-adductor-stand-6",
+            name: "Adductor",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 25,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "Stand 6",
+            archived: false,
+          },
+          {
+            id: "ex-abductor-stand-1",
+            name: "Abductor",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 25,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "Stand 1",
+            archived: false,
+          },
+          {
+            id: "ex-legpress-left",
+            name: "Leg press links",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 30,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-legpress-right",
+            name: "Leg press rechts",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 30,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-leg-curl",
+            name: "Leg curl",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 20,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-prone-curl",
+            name: "Prone curl",
+            category: "hip",
+            mode: "simple",
+            reps: 2,
+            weightKg: 20,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-tube-bank-row",
+            name: "Tube bank row",
+            category: "shoulder",
+            mode: "simple",
+            reps: 2,
+            weightKg: 20,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 2,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-fietsen",
+            name: "Fietsen",
+            category: "core",
+            mode: "duration",
+            reps: 0,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 20,
+            sessionsPerDay: 1,
+            notes: "Alleen woensdag",
+            archived: false,
+          },
+          {
+            id: "ex-cross-trainer",
+            name: "Cross trainer",
+            category: "core",
+            mode: "duration",
+            reps: 0,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 10,
+            sessionsPerDay: 1,
+            notes: "Alleen woensdag",
+            archived: false,
+          },
+        ];
+
+        const mondayExerciseIds = [
+          "ex-adductor-stand-6",
+          "ex-abductor-stand-1",
+          "ex-legpress-left",
+          "ex-legpress-right",
+          "ex-leg-curl",
+          "ex-prone-curl",
+          "ex-tube-bank-row",
+        ];
+
+        const wednesdayExerciseIds = [...mondayExerciseIds, "ex-fietsen", "ex-cross-trainer"];
+        const thursdayExerciseIds = [...mondayExerciseIds];
+
+        const buildItemsForDate = (dateISO, exerciseIds) =>
+          exerciseIds.map((exerciseId) => {
+            const exercise = exercises.find((item) => item.id === exerciseId);
+            return {
+              id: `pl-${exercise.id}-${dateISO}`,
+              exerciseId: exercise.id,
+              sessionsPerDay: exercise.sessionsPerDay,
+              mode: exercise.mode,
+              reps: exercise.reps,
+              weightKg: exercise.weightKg,
+              holdSeconds: exercise.holdSeconds,
+              durationMinutes: exercise.durationMinutes,
+              notes: exercise.notes,
+            };
+          });
+
+        const mondayItems = buildItemsForDate(mondayISO, mondayExerciseIds);
+        const wednesdayItems = buildItemsForDate(wednesdayISO, wednesdayExerciseIds);
+        const thursdayItems = buildItemsForDate(thursdayISO, thursdayExerciseIds);
+
+        const mondayLog = createEmptyLog();
+        mondayItems.forEach((item) => {
+          mondayLog.exercises[item.id] = { completed: item.sessionsPerDay };
+        });
+        mondayLog.note = "Vandaag uitgevoerd.";
+
+        return {
+          exercises,
+          plans: {
+            [mondayISO]: { items: mondayItems },
+            [wednesdayISO]: { items: wednesdayItems },
+            [thursdayISO]: { items: thursdayItems },
+          },
+          logs: {
+            [mondayISO]: mondayLog,
+          },
         };
       }
 
