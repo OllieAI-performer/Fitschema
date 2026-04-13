@@ -634,32 +634,6 @@
         font-size: 0.76rem;
       }
 
-      .plan-edit-grid {
-        display: grid;
-        gap: 8px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        margin-top: 8px;
-      }
-
-      .plan-edit-grid .field > span {
-        font-size: 0.68rem;
-      }
-
-      .plan-edit-grid input,
-      .plan-edit-grid textarea {
-        padding: 8px 10px;
-        border-radius: 12px;
-        font-size: 0.82rem;
-      }
-
-      .plan-edit-grid textarea {
-        min-height: 54px;
-      }
-
-      .plan-edit-grid .field.full {
-        grid-column: 1 / -1;
-      }
-
       .icon-btn {
         width: 28px;
         height: 28px;
@@ -1827,8 +1801,6 @@
           copyPlan(el.copySourceDate.value, getPlannerTargetDate());
         });
         el.plannerGrid.addEventListener("click", handlePlannerGridClick);
-        el.plannerGrid.addEventListener("input", handlePlannerGridChange);
-        el.plannerGrid.addEventListener("change", handlePlannerGridChange);
         el.prevWeek.addEventListener("click", () => shiftPlannerWeek(-7));
         el.nextWeek.addEventListener("click", () => shiftPlannerWeek(7));
         el.plannerWeek.addEventListener("change", () => {
@@ -2387,33 +2359,6 @@
         }
       }
 
-      function handlePlannerGridChange(event) {
-        const field = event.target.closest("input, textarea");
-        if (!field) return;
-
-        const dateISO = field.dataset.date;
-        const planId = field.dataset.planId;
-        const key = field.dataset.key;
-        if (!dateISO || !planId || !key) return;
-
-        const plan = ensurePlan(dateISO);
-        const item = plan.items.find((entry) => entry.id === planId);
-        if (!item) return;
-
-        if (key === "sessionsPerDay") item.sessionsPerDay = Math.max(1, Number(field.value) || 1);
-        if (key === "reps") item.reps = Math.max(0, Number(field.value) || 0);
-        if (key === "weightKg") item.weightKg = Math.max(0, Number(field.value) || 0);
-        if (key === "holdSeconds") item.holdSeconds = Math.max(0, Number(field.value) || 0);
-        if (key === "durationMinutes") item.durationMinutes = Math.max(0, Number(field.value) || 0);
-        if (key === "notes") item.notes = field.value.trim();
-
-        saveState();
-        renderHeroMetrics();
-        renderPlanner();
-        renderDaily();
-        renderOverview();
-      }
-
       function getPlannerTargetDate() {
         return el.plannerDaySelect.value || getWeekDates(state.plannerWeekStart)[0];
       }
@@ -2569,17 +2514,6 @@
                     </button>
                   </div>
                 </div>
-                <div class="plan-edit-grid">
-                  <label class="field">
-                    <span>Sessies</span>
-                    <input type="number" min="1" value="${item.sessionsPerDay}" data-date="${dateISO}" data-plan-id="${item.id}" data-key="sessionsPerDay" />
-                  </label>
-                  ${editFields}
-                  <label class="field full">
-                    <span>Notitie</span>
-                    <textarea data-date="${dateISO}" data-plan-id="${item.id}" data-key="notes" placeholder="Korte notitie">${escapeHtml(item.notes || "")}</textarea>
-                  </label>
-                </div>
                 ${notes}
               </div>
             `;
@@ -2607,32 +2541,6 @@
             const exercise = getExerciseById(item.exerciseId);
             if (!exercise) return "";
             const notes = item.notes ? `<div class="meta">${escapeHtml(item.notes)}</div>` : "";
-            let editFields = `
-              <label class="field">
-                <span>Herh</span>
-                <input type="number" min="0" value="${item.reps}" data-date="${dateISO}" data-plan-id="${item.id}" data-key="reps" />
-              </label>
-              <label class="field">
-                <span>Kg</span>
-                <input type="number" min="0" step="0.5" value="${item.weightKg || 0}" data-date="${dateISO}" data-plan-id="${item.id}" data-key="weightKg" />
-              </label>
-            `;
-            if (item.mode === "hold") {
-              editFields += `
-                <label class="field">
-                  <span>Hold</span>
-                  <input type="number" min="0" value="${item.holdSeconds}" data-date="${dateISO}" data-plan-id="${item.id}" data-key="holdSeconds" />
-                </label>
-              `;
-            }
-            if (item.mode === "duration") {
-              editFields = `
-                <label class="field">
-                  <span>Min</span>
-                  <input type="number" min="1" value="${item.durationMinutes}" data-date="${dateISO}" data-plan-id="${item.id}" data-key="durationMinutes" />
-                </label>
-              `;
-            }
             return `
               <div class="plan-item">
                 <div class="plan-item-top">
