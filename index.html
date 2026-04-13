@@ -1251,7 +1251,7 @@
     </dialog>
 
     <script>
-      const STORAGE_KEY = "fitschema.v5.program-week-2026-04-13";
+      const STORAGE_KEY = "fitschema.v6.program-week-2026-04-13";
       const LEGACY_STORAGE_KEYS = ["fitschema.v3"];
       const CATEGORY_LABELS = {
         hip: "Heup",
@@ -1368,8 +1368,11 @@
 
       function createStarterProgram(selectedDate) {
         const mondayISO = selectedDate;
+        const tuesdayISO = addDaysISO(mondayISO, 1);
         const wednesdayISO = addDaysISO(mondayISO, 2);
         const thursdayISO = addDaysISO(mondayISO, 3);
+        const fridayISO = addDaysISO(mondayISO, 4);
+        const saturdayISO = addDaysISO(mondayISO, 5);
 
         const exercises = [
           {
@@ -1489,6 +1492,110 @@
             notes: "Alleen woensdag",
             archived: false,
           },
+          {
+            id: "ex-bike-25",
+            name: "Fietsen",
+            category: "core",
+            mode: "duration",
+            reps: 0,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 25,
+            sessionsPerDay: 1,
+            notes: "Morgen, vrijdag en zaterdag",
+            archived: false,
+          },
+          {
+            id: "ex-crossfit-10",
+            name: "Crossfit",
+            category: "core",
+            mode: "duration",
+            reps: 0,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 10,
+            sessionsPerDay: 1,
+            notes: "Morgen, vrijdag en zaterdag",
+            archived: false,
+          },
+          {
+            id: "ex-bridge",
+            name: "Bridge",
+            category: "core",
+            mode: "simple",
+            reps: 12,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 3,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-sit-ups",
+            name: "Sit ups",
+            category: "core",
+            mode: "simple",
+            reps: 30,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 3,
+            notes: "",
+            archived: false,
+          },
+          {
+            id: "ex-standup-walk",
+            name: "Standup walk",
+            category: "hip",
+            mode: "simple",
+            reps: 12,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 3,
+            notes: "Beide kanten",
+            archived: false,
+          },
+          {
+            id: "ex-leg-lift",
+            name: "Leg lift",
+            category: "hip",
+            mode: "simple",
+            reps: 12,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 3,
+            notes: "Rechts en links",
+            archived: false,
+          },
+          {
+            id: "ex-hamstring-stretch",
+            name: "Hamstring stretch",
+            category: "hip",
+            mode: "simple",
+            reps: 3,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 1,
+            notes: "Rechts en links",
+            archived: false,
+          },
+          {
+            id: "ex-bovenbeen-stretch",
+            name: "Bovenbeen stretch",
+            category: "hip",
+            mode: "simple",
+            reps: 3,
+            weightKg: 0,
+            holdSeconds: 0,
+            durationMinutes: 0,
+            sessionsPerDay: 1,
+            notes: "Rechts en links",
+            archived: false,
+          },
         ];
 
         const mondayExerciseIds = [
@@ -1501,8 +1608,21 @@
           "ex-tube-bank-row",
         ];
 
+        const tuesdayExerciseIds = [
+          "ex-bike-25",
+          "ex-crossfit-10",
+          "ex-bridge",
+          "ex-sit-ups",
+          "ex-standup-walk",
+          "ex-leg-lift",
+          "ex-hamstring-stretch",
+          "ex-bovenbeen-stretch",
+        ];
+
         const wednesdayExerciseIds = [...mondayExerciseIds, "ex-fietsen", "ex-cross-trainer"];
         const thursdayExerciseIds = [...mondayExerciseIds];
+        const fridayExerciseIds = [...tuesdayExerciseIds];
+        const saturdayExerciseIds = [...tuesdayExerciseIds];
 
         const buildItemsForDate = (dateISO, exerciseIds) =>
           exerciseIds.map((exerciseId) => {
@@ -1521,8 +1641,11 @@
           });
 
         const mondayItems = buildItemsForDate(mondayISO, mondayExerciseIds);
+        const tuesdayItems = buildItemsForDate(tuesdayISO, tuesdayExerciseIds);
         const wednesdayItems = buildItemsForDate(wednesdayISO, wednesdayExerciseIds);
         const thursdayItems = buildItemsForDate(thursdayISO, thursdayExerciseIds);
+        const fridayItems = buildItemsForDate(fridayISO, fridayExerciseIds);
+        const saturdayItems = buildItemsForDate(saturdayISO, saturdayExerciseIds);
 
         const mondayLog = createEmptyLog();
         mondayItems.forEach((item) => {
@@ -1534,8 +1657,11 @@
           exercises,
           plans: {
             [mondayISO]: { items: mondayItems },
+            [tuesdayISO]: { items: tuesdayItems },
             [wednesdayISO]: { items: wednesdayItems },
             [thursdayISO]: { items: thursdayItems },
+            [fridayISO]: { items: fridayItems },
+            [saturdayISO]: { items: saturdayItems },
           },
           logs: {
             [mondayISO]: mondayLog,
