@@ -125,19 +125,19 @@
       }
 
       .hero h1 {
-        margin: 16px 0 8px;
-        max-width: 10ch;
-        font-size: clamp(2rem, 4.6vw, 4.2rem);
-        line-height: 0.98;
-        letter-spacing: -0.04em;
-        text-transform: uppercase;
+        margin: 12px 0 6px;
+        max-width: 18ch;
+        font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        text-transform: none;
       }
 
       .hero p {
         margin: 0;
-        max-width: 46ch;
+        max-width: 38ch;
         color: rgba(255, 253, 250, 0.78);
-        font-size: 0.95rem;
+        font-size: 0.86rem;
       }
 
       .hero-metrics {
@@ -191,6 +191,63 @@
         margin: 0;
         display: grid;
         gap: 10px;
+      }
+
+      .hero-photo {
+        display: grid;
+        gap: 10px;
+      }
+
+      .hero-photo-frame {
+        position: relative;
+        min-height: 180px;
+        border-radius: 18px;
+        overflow: hidden;
+        background:
+          linear-gradient(160deg, rgba(218, 92, 0, 0.24), rgba(255, 255, 255, 0.06)),
+          radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.22), transparent 35%),
+          linear-gradient(135deg, rgba(42, 112, 66, 0.86), rgba(18, 57, 28, 0.92));
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .hero-photo-frame::before,
+      .hero-photo-frame::after {
+        content: "";
+        position: absolute;
+        inset: auto;
+        border: 2px solid rgba(255, 255, 255, 0.38);
+        opacity: 0.7;
+      }
+
+      .hero-photo-frame::before {
+        left: 16px;
+        right: 16px;
+        top: 16px;
+        bottom: 16px;
+        border-radius: 14px;
+      }
+
+      .hero-photo-frame::after {
+        width: 72px;
+        height: 72px;
+        right: 24px;
+        top: 24px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .hero-photo-label {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(16, 16, 16, 0.38);
+        backdrop-filter: blur(10px);
+        color: #fffdfa;
+        font-size: 0.8rem;
+        font-weight: 700;
       }
 
       .hero-brand {
@@ -950,8 +1007,8 @@
         <div class="hero-grid">
           <div>
             <div class="eyebrow"><span class="hero-brand">FitSchema</span> Praktijkplanner</div>
-            <h1>Schema voor vandaag opbouwen.</h1>
-            <p>Bouw je week in 3 stappen: oefening kiezen, dagen vullen, vandaag afwerken.</p>
+            <h1>Weekplanner voor Olga</h1>
+            <p>Oefeningen, weekindeling en daguitvoering in een rustig overzicht.</p>
             <div class="hero-shortcuts">
               <span class="shortcut">1. Oefeningen</span>
               <span class="shortcut">2. Week plannen</span>
@@ -960,10 +1017,15 @@
             <div class="hero-metrics" id="hero-metrics"></div>
           </div>
           <aside class="hero-card">
-            <h2>Vandaag</h2>
-            <div class="quick-list">
-              <strong id="hero-date-label">Klaar voor een nieuw schema</strong>
-              <p>Open vandaag, vul de week en houd het scherm rustig.</p>
+            <div class="hero-photo">
+              <h2>Actie-foto</h2>
+              <div class="hero-photo-frame">
+                <div class="hero-photo-label">Fotoplek klaar. Voeg hier Olga tennis in actie toe met een toegestane foto.</div>
+              </div>
+              <div class="quick-list">
+                <strong id="hero-date-label">Klaar voor een nieuw schema</strong>
+                <p>Open vandaag, vul de week en houd het scherm rustig.</p>
+              </div>
             </div>
           </aside>
         </div>
