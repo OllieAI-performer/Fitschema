@@ -999,6 +999,10 @@
                     <span>Standaard herhalingen</span>
                     <input id="exercise-reps" type="number" min="1" value="10" required />
                   </label>
+                  <label class="field" id="weight-field">
+                    <span>Gewicht (kg)</span>
+                    <input id="exercise-weight" type="number" min="0" step="0.5" value="0" />
+                  </label>
                   <label class="field" id="hold-field">
                     <span>Vasthouden (sec)</span>
                     <input id="exercise-hold" type="number" min="1" value="5" />
@@ -1137,6 +1141,10 @@
                     <span>Herhalingen</span>
                     <input id="planner-reps" type="number" min="1" value="10" />
                   </label>
+                  <label class="field" id="planner-weight-field">
+                    <span>Gewicht (kg)</span>
+                    <input id="planner-weight" type="number" min="0" step="0.5" value="0" />
+                  </label>
                   <label class="field" id="planner-hold-field">
                     <span>Vasthouden (sec)</span>
                     <input id="planner-hold" type="number" min="1" value="5" />
@@ -1253,6 +1261,8 @@
         mode: document.getElementById("exercise-mode"),
         reps: document.getElementById("exercise-reps"),
         repsField: document.getElementById("reps-field"),
+        weight: document.getElementById("exercise-weight"),
+        weightField: document.getElementById("weight-field"),
         hold: document.getElementById("exercise-hold"),
         holdField: document.getElementById("hold-field"),
         duration: document.getElementById("exercise-duration"),
@@ -1283,6 +1293,8 @@
         plannerSessions: document.getElementById("planner-sessions"),
         plannerReps: document.getElementById("planner-reps"),
         plannerRepsField: document.getElementById("planner-reps-field"),
+        plannerWeight: document.getElementById("planner-weight"),
+        plannerWeightField: document.getElementById("planner-weight-field"),
         plannerHold: document.getElementById("planner-hold"),
         plannerHoldField: document.getElementById("planner-hold-field"),
         plannerDuration: document.getElementById("planner-duration"),
@@ -1491,6 +1503,7 @@
             ? exercise.mode
             : "simple",
           reps: Number(exercise.reps) || 0,
+          weightKg: Math.max(0, Number(exercise.weightKg) || 0),
           holdSeconds: Number(exercise.holdSeconds) || 0,
           durationMinutes: Number(exercise.durationMinutes) || 0,
           sessionsPerDay: Number(exercise.sessionsPerDay) || 1,
@@ -1523,6 +1536,7 @@
           sessionsPerDay: Number(item.sessionsPerDay) || 1,
           mode: ["hold", "simple", "duration"].includes(item.mode) ? item.mode : "simple",
           reps: Number(item.reps) || 0,
+          weightKg: Math.max(0, Number(item.weightKg) || 0),
           holdSeconds: Number(item.holdSeconds) || 0,
           durationMinutes: Number(item.durationMinutes) || 0,
           notes: String(item.notes || "").trim(),
@@ -1566,6 +1580,7 @@
                   sessionsPerDay: exercise.sessionsPerDay,
                   mode: exercise.mode,
                   reps: exercise.reps,
+                  weightKg: exercise.weightKg,
                   holdSeconds: exercise.holdSeconds,
                   durationMinutes: exercise.durationMinutes,
                   notes: "",
@@ -1669,6 +1684,7 @@
         const isHold = mode === "hold";
         const isDuration = mode === "duration";
         el.repsField.style.display = isDuration ? "none" : "grid";
+        el.weightField.style.display = isDuration ? "none" : "grid";
         el.holdField.style.display = isHold ? "grid" : "none";
         el.durationField.style.display = isDuration ? "grid" : "none";
         el.reps.required = !isDuration;
@@ -1681,6 +1697,7 @@
         el.category.value = "hip";
         el.mode.value = "hold";
         el.reps.value = 10;
+        el.weight.value = 0;
         el.hold.value = 5;
         el.duration.value = 10;
         el.sessions.value = 3;
@@ -1700,6 +1717,7 @@
           category: el.category.value,
           mode: el.mode.value,
           reps: el.mode.value === "duration" ? 0 : Number(el.reps.value),
+          weightKg: el.mode.value === "duration" ? 0 : Math.max(0, Number(el.weight.value) || 0),
           holdSeconds: el.mode.value === "hold" ? Number(el.hold.value) : 0,
           durationMinutes: el.mode.value === "duration" ? Number(el.duration.value) : 0,
           sessionsPerDay: Number(el.sessions.value) || 1,
@@ -1734,6 +1752,7 @@
                   ...item,
                   mode: exercise.mode,
                   reps: exercise.mode === "duration" ? 0 : exercise.reps,
+                  weightKg: exercise.mode === "duration" ? 0 : exercise.weightKg,
                   holdSeconds: exercise.mode === "hold" ? exercise.holdSeconds : 0,
                   durationMinutes: exercise.mode === "duration" ? exercise.durationMinutes : 0,
                 }
@@ -1755,6 +1774,7 @@
           el.category.value = exercise.category;
           el.mode.value = exercise.mode;
           el.reps.value = exercise.reps || 10;
+          el.weight.value = exercise.weightKg || 0;
           el.hold.value = exercise.holdSeconds || 5;
           el.duration.value = exercise.durationMinutes || 10;
           el.sessions.value = exercise.sessionsPerDay || 3;
@@ -1815,6 +1835,7 @@
         if (!exercise) {
           el.plannerSessions.value = 1;
           el.plannerRepsField.style.display = "grid";
+          el.plannerWeightField.style.display = "grid";
           el.plannerHoldField.style.display = "none";
           el.plannerDurationField.style.display = "none";
           return;
@@ -1822,12 +1843,14 @@
 
         el.plannerSessions.value = exercise.sessionsPerDay || 1;
         el.plannerReps.value = exercise.reps || 10;
+        el.plannerWeight.value = exercise.weightKg || 0;
         el.plannerHold.value = exercise.holdSeconds || 5;
         el.plannerDuration.value = exercise.durationMinutes || 10;
 
         const isHold = exercise.mode === "hold";
         const isDuration = exercise.mode === "duration";
         el.plannerRepsField.style.display = isDuration ? "none" : "grid";
+        el.plannerWeightField.style.display = isDuration ? "none" : "grid";
         el.plannerHoldField.style.display = isHold ? "grid" : "none";
         el.plannerDurationField.style.display = isDuration ? "grid" : "none";
       }
@@ -1838,6 +1861,7 @@
 
       function resetPlannerForm(keepStatus = false) {
         el.plannerNote.value = "";
+        el.plannerWeight.value = 0;
         syncPlannerInputsFromExercise();
         if (!keepStatus) showStatus("Planner-formulier gereset.", "info");
       }
@@ -1876,6 +1900,10 @@
           sessionsPerDay: Number(el.plannerSessions.value) || 1,
           mode: exercise.mode,
           reps: exercise.mode === "duration" ? 0 : Number(el.plannerReps.value) || exercise.reps,
+          weightKg:
+            exercise.mode === "duration"
+              ? 0
+              : Math.max(0, Number(el.plannerWeight.value) || exercise.weightKg || 0),
           holdSeconds:
             exercise.mode === "hold" ? Number(el.plannerHold.value) || exercise.holdSeconds : 0,
           durationMinutes:
@@ -2316,9 +2344,10 @@
       }
 
       function getExerciseDescription(item) {
-        if (item.mode === "hold") return `${item.reps} herhalingen, ${item.holdSeconds}s hold`;
+        const weightLabel = item.weightKg ? `, ${item.weightKg} kg` : "";
+        if (item.mode === "hold") return `${item.reps} herhalingen${weightLabel}, ${item.holdSeconds}s hold`;
         if (item.mode === "duration") return `${item.durationMinutes} minuten per sessie`;
-        return `${item.reps} herhalingen per sessie`;
+        return `${item.reps} herhalingen${weightLabel} per sessie`;
       }
 
       function calculateTotals(dateISO) {
