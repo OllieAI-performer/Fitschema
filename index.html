@@ -836,6 +836,22 @@
         grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
       }
 
+      body.is-day-view .layout,
+      body.is-month-view .layout {
+        grid-template-columns: 1fr;
+      }
+
+      body.is-day-view .column-sidebar,
+      body.is-month-view .column-sidebar {
+        position: static;
+      }
+
+      .auto-save-hint {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
       .file-wrap {
         position: relative;
         overflow: hidden;
@@ -951,7 +967,7 @@
 
       <main class="layout">
         <section class="column column-sidebar">
-          <article class="card">
+          <article class="card" id="daily-card">
             <div class="card-inner">
               <div class="section-head">
                 <div>
@@ -1094,15 +1110,16 @@
                 </details>
 
                 <div class="actions">
-                  <button type="button" class="tonal" id="save-daily">Vandaag opslaan</button>
+                  <button type="button" class="ghost" id="save-daily">Nu opslaan</button>
                 </div>
+                <div class="auto-save-hint">Wijzigingen worden automatisch opgeslagen.</div>
               </div>
             </div>
           </article>
         </section>
 
         <section class="column column-main">
-          <article class="card">
+          <article class="card" id="planner-card">
             <div class="card-inner">
               <div class="section-head">
                 <div>
@@ -1179,7 +1196,7 @@
           </article>
 
           <div class="secondary-grid">
-            <article class="card">
+            <article class="card" id="overview-card">
               <div class="card-inner">
                 <div class="section-head">
                   <div>
@@ -1198,7 +1215,7 @@
               </div>
             </article>
 
-            <article class="card">
+            <article class="card" id="data-card">
               <div class="card-inner">
                 <div class="section-head">
                   <div>
@@ -1248,6 +1265,7 @@
       let editingExerciseId = null;
       let activeTimer = null;
       let statusTimer = null;
+      let dailyAutoSaveTimer = null;
       let exerciseIndex = buildExerciseIndex(state.exercises);
 
       const el = {
@@ -1285,6 +1303,7 @@
         minutesOutput: document.getElementById("minutes-output"),
         note: document.getElementById("daily-note"),
         saveDaily: document.getElementById("save-daily"),
+        dailyCard: document.getElementById("daily-card"),
         timerPanel: document.getElementById("timer-panel"),
         plannerWeek: document.getElementById("planner-week"),
         weekLabel: document.getElementById("week-label"),
@@ -1306,11 +1325,14 @@
         copySourceDate: document.getElementById("copy-source-date"),
         copyFromDate: document.getElementById("copy-from-date"),
         plannerGrid: document.getElementById("planner-grid"),
+        plannerCard: document.getElementById("planner-card"),
         prevWeek: document.getElementById("prev-week"),
         nextWeek: document.getElementById("next-week"),
         syncSelectedWeek: document.getElementById("sync-selected-week"),
         tabs: document.querySelectorAll(".tab-buttons button"),
         overview: document.getElementById("overview"),
+        overviewCard: document.getElementById("overview-card"),
+        dataCard: document.getElementById("data-card"),
         exportBtn: document.getElementById("export-btn"),
         exportDialog: document.getElementById("export-dialog"),
         downloadExport: document.getElementById("download-export"),
@@ -1390,6 +1412,21 @@
         renderAll();
       }
 
+      function queueDailyAutoSave() {
+        if (dailyAutoSaveTimer) clearTimeout(dailyAutoSaveTimer);
+        dailyAutoSaveTimer = setTimeout(() => {
+          persistDailyLog();
+        }, 350);
+      }
+
+      function renderWorkspaceVisibility() {
+        document.body.classList.toggle("is-day-view", state.view === "day");
+        document.body.classList.toggle("is-month-view", state.view === "month");
+
+        el.dailyCard.hidden = state.view === "week" || state.view === "month";
+        el.plannerCard.hidden = state.view === "day" || state.view === "month";
+      }
+
       function bindEvents() {
         el.mode.addEventListener("change", toggleExerciseFields);
         el.form.addEventListener("submit", handleSaveExercise);
@@ -1410,9 +1447,19 @@
           renderAll();
         });
         el.dailyList.addEventListener("click", handleDailyAction);
-        el.pain.addEventListener("input", updateRangeReadouts);
-        el.mobility.addEventListener("input", updateRangeReadouts);
-        el.minutes.addEventListener("input", updateRangeReadouts);
+        el.pain.addEventListener("input", () => {
+          updateRangeReadouts();
+          queueDailyAutoSave();
+        });
+        el.mobility.addEventListener("input", () => {
+          updateRangeReadouts();
+          queueDailyAutoSave();
+        });
+        el.minutes.addEventListener("input", () => {
+          updateRangeReadouts();
+          queueDailyAutoSave();
+        });
+        el.note.addEventListener("input", queueDailyAutoSave);
         el.saveDaily.addEventListener("click", saveDailyLog);
         el.plannerExerciseSelect.addEventListener("change", syncPlannerInputsFromExercise);
         el.addToPlan.addEventListener("click", addPlanItem);
@@ -1444,7 +1491,7 @@
           tab.addEventListener("click", () => {
             state.view = tab.dataset.view;
             saveState();
-            renderOverview();
+            renderAll();
           })
         );
         el.exportBtn.addEventListener("click", () => el.exportDialog.showModal());
@@ -1979,15 +2026,19 @@
         );
       }
 
-      function saveDailyLog() {
+      function persistDailyLog({ rerender = false, showFeedback = false } = {}) {
         const log = ensureLog(state.selectedDate);
         log.pain = Number(el.pain.value) || 0;
         log.mobility = Number(el.mobility.value) || 3;
         log.minutes = Number(el.minutes.value) || 0;
         log.note = el.note.value.trim();
         saveState();
-        renderAll();
-        showStatus("Daglog opgeslagen.", "success");
+        if (rerender) renderAll();
+        if (showFeedback) showStatus("Daglog opgeslagen.", "success");
+      }
+
+      function saveDailyLog() {
+        persistDailyLog({ rerender: true, showFeedback: true });
       }
 
       function handleDailyAction(event) {
@@ -2042,6 +2093,7 @@
       }
       
       function renderAll() {
+        renderWorkspaceVisibility();
         renderHeroMetrics();
         renderLibrary();
         renderPlanner();
