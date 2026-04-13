@@ -1,0 +1,2463 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FitSchema Pro - Weekplanner voor training</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Finger+Paint&display=swap");
+
+      :root {
+        --bg: #f3f3f1;
+        --bg-deep: #e9e9e4;
+        --surface: rgba(255, 255, 255, 0.94);
+        --surface-strong: #ffffff;
+        --panel: rgba(28, 28, 28, 0.94);
+        --ink: #1f1f1d;
+        --muted: #6d6a63;
+        --line: rgba(31, 31, 29, 0.1);
+        --line-strong: rgba(31, 31, 29, 0.18);
+        --accent: #da5c00;
+        --accent-2: #32322f;
+        --accent-3: #78756f;
+        --shadow: 0 22px 44px rgba(20, 20, 18, 0.12);
+        --radius-xl: 22px;
+        --radius-lg: 18px;
+        --radius-md: 14px;
+        --radius-sm: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Montserrat", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(218, 92, 0, 0.14), transparent 30%),
+          radial-gradient(circle at 82% 16%, rgba(31, 31, 29, 0.06), transparent 24%),
+          linear-gradient(135deg, var(--bg), var(--bg-deep));
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04)),
+          repeating-linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.08) 0,
+            rgba(255, 255, 255, 0.08) 2px,
+            transparent 2px,
+            transparent 16px
+          );
+        opacity: 0.45;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .shell {
+        width: min(1680px, calc(100vw - 20px));
+        margin: 14px auto 28px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        padding: 22px;
+        background:
+          linear-gradient(135deg, rgba(18, 18, 18, 0.94), rgba(42, 42, 39, 0.92)),
+          linear-gradient(120deg, rgba(218, 92, 0, 0.28), transparent 58%);
+        color: #fffdfa;
+        box-shadow: var(--shadow);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        right: -60px;
+        top: -120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 68%);
+      }
+
+      .hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.85fr);
+        align-items: start;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 253, 250, 0.82);
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        margin: 16px 0 8px;
+        max-width: 10ch;
+        font-size: clamp(2rem, 4.6vw, 4.2rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 46ch;
+        color: rgba(255, 253, 250, 0.78);
+        font-size: 0.95rem;
+      }
+
+      .hero-metrics {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 26px;
+      }
+
+      .metric {
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 6px;
+        color: rgba(247, 244, 238, 0.7);
+        font-size: 0.9rem;
+      }
+
+      .hero-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .hero-card h2 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+
+      .hero-card p,
+      .hero-card strong {
+        color: rgba(255, 253, 250, 0.8);
+        font-size: 0.92rem;
+      }
+
+      .hero-card .quick-list {
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .hero-brand {
+        font-family: "Finger Paint", cursive;
+        font-size: 1.1rem;
+        color: #fffdfa;
+      }
+
+      .hero-shortcuts {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+
+      .shortcut {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 253, 250, 0.78);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .layout {
+        display: grid;
+        gap: 16px;
+        margin-top: 18px;
+        grid-template-columns: minmax(290px, 340px) minmax(0, 1fr);
+      }
+
+      .column {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+
+      .column-sidebar {
+        position: sticky;
+        top: 88px;
+        align-self: start;
+      }
+
+      .column-main {
+        display: grid;
+        gap: 16px;
+      }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 24%);
+      }
+
+      .card-inner {
+        position: relative;
+        z-index: 1;
+        padding: 18px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: start;
+        margin-bottom: 18px;
+      }
+
+      .section-head h2,
+      .section-head h3 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .section-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .step-tag {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: rgba(218, 92, 0, 0.1);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(218, 92, 0, 0.12);
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        flex: 1 1 160px;
+        min-width: 0;
+      }
+
+      .field > span,
+      .field > label > span {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(23, 48, 43, 0.12);
+        border-radius: 16px;
+        padding: 13px 14px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink);
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: rgba(47, 139, 114, 0.54);
+        box-shadow: 0 0 0 4px rgba(47, 139, 114, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .segmented button,
+      .tab-buttons button,
+      .ghost,
+      .primary,
+      .tonal,
+      .danger {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 11px 15px;
+        font-weight: 700;
+        transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+
+      .segmented button,
+      .tab-buttons button,
+      .ghost {
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+
+      .segmented button.active,
+      .tab-buttons button.active {
+        background: var(--panel);
+        color: #fffaf4;
+        box-shadow: 0 14px 26px rgba(15, 27, 26, 0.18);
+      }
+
+      .primary {
+        color: white;
+        background: linear-gradient(135deg, var(--accent), #f07a22);
+        box-shadow: 0 16px 28px rgba(218, 92, 0, 0.24);
+      }
+
+      .tonal {
+        color: white;
+        background: linear-gradient(135deg, var(--accent-2), #4b4b46);
+        box-shadow: 0 16px 28px rgba(31, 31, 29, 0.2);
+      }
+
+      .danger {
+        color: white;
+        background: linear-gradient(135deg, #bb4d4d, #da6a55);
+      }
+
+      .ghost:hover,
+      .primary:hover,
+      .tonal:hover,
+      .danger:hover,
+      .segmented button:hover,
+      .tab-buttons button:hover {
+        transform: translateY(-1px);
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .library-list,
+      .daily-list,
+      .plan-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .library-item,
+      .daily-item,
+      .planner-day {
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.78);
+        padding: 16px;
+      }
+
+      .library-item-header,
+      .daily-item-header,
+      .planner-day-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .library-item h3,
+      .daily-item h3,
+      .planner-day h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .meta,
+      .hint,
+      .empty {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(23, 48, 43, 0.06);
+        color: var(--ink);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .badge.hip {
+        background: rgba(212, 111, 61, 0.13);
+        color: #995229;
+      }
+
+      .badge.shoulder {
+        background: rgba(45, 91, 157, 0.12);
+        color: var(--accent-3);
+      }
+
+      .badge.core {
+        background: rgba(47, 139, 114, 0.12);
+        color: var(--accent-2);
+      }
+
+      .summary-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .summary-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 246, 241, 0.92));
+        border: 1px solid var(--line);
+      }
+
+      .summary-card strong {
+        display: block;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      .summary-card span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .week-toolbar,
+      .date-toolbar,
+      .copy-toolbar,
+      .planner-toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .planner-shell {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(246, 242, 236, 0.88);
+        border: 1px solid rgba(218, 92, 0, 0.08);
+      }
+
+      .planner-shell .row,
+      .planner-shell .planner-toolbar,
+      .planner-shell .copy-toolbar,
+      .planner-shell .actions,
+      .planner-shell .week-toolbar {
+        margin: 0;
+      }
+
+      .planner-shell textarea {
+        min-height: 64px;
+      }
+
+      .date-chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(23, 48, 43, 0.06);
+        font-weight: 700;
+        font-size: 0.82rem;
+      }
+
+      .plan-grid {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        overflow: visible;
+        padding-bottom: 0;
+        gap: 10px;
+      }
+
+      .planner-day {
+        min-height: 0;
+        padding: 12px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(250, 244, 236, 0.88));
+      }
+
+      .planner-day.active {
+        border-color: rgba(218, 92, 0, 0.38);
+        box-shadow: inset 0 0 0 1px rgba(218, 92, 0, 0.12);
+      }
+
+      .planner-day small {
+        color: var(--muted);
+        display: block;
+        margin-top: 3px;
+        font-size: 0.76rem;
+      }
+
+      .planner-actions {
+        display: grid;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .planner-actions .ghost {
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 0.74rem;
+      }
+
+      .plan-item {
+        display: grid;
+        gap: 6px;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(23, 48, 43, 0.08);
+        background: rgba(255, 255, 255, 0.86);
+      }
+
+      .plan-item-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .plan-item-title {
+        font-weight: 800;
+        font-size: 0.92rem;
+      }
+
+      .plan-item .meta {
+        font-size: 0.76rem;
+      }
+
+      .icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.92);
+        font-weight: 800;
+        padding: 0;
+      }
+
+      .daily-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .counter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 68px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: rgba(218, 92, 0, 0.12);
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .progress {
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(23, 48, 43, 0.08);
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(135deg, var(--accent), #f4a261);
+      }
+
+      .timer-panel {
+        display: none;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(45, 91, 157, 0.12);
+        color: var(--accent-3);
+        font-weight: 800;
+      }
+
+      .app-status {
+        position: sticky;
+        top: 14px;
+        z-index: 5;
+        margin: 18px 0 0;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid transparent;
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .app-status[hidden] {
+        display: none;
+      }
+
+      .app-status[data-tone="info"] {
+        background: rgba(45, 91, 157, 0.14);
+        border-color: rgba(45, 91, 157, 0.16);
+        color: var(--accent-3);
+      }
+
+      .app-status[data-tone="success"] {
+        background: rgba(47, 139, 114, 0.14);
+        border-color: rgba(47, 139, 114, 0.18);
+        color: var(--accent-2);
+      }
+
+      .app-status[data-tone="error"] {
+        background: rgba(187, 77, 77, 0.12);
+        border-color: rgba(187, 77, 77, 0.18);
+        color: #9f3131;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .calendar-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+
+      .calendar-cell {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .calendar-cell.complete {
+        border-color: rgba(218, 92, 0, 0.28);
+        background: rgba(218, 92, 0, 0.08);
+      }
+
+      .calendar-cell strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.15rem;
+      }
+
+      .calendar-cell .bar {
+        margin-top: 10px;
+        height: 7px;
+        border-radius: 999px;
+        background: rgba(23, 48, 43, 0.08);
+        overflow: hidden;
+      }
+
+      .calendar-cell .bar span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent), #f0a15a);
+      }
+
+      .range-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .daily-log-shell {
+        display: grid;
+        gap: 14px;
+      }
+
+      .daily-note-card {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(248, 246, 241, 0.92);
+      }
+
+      .daily-note-card textarea {
+        min-height: 88px;
+      }
+
+      .daily-details {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 12px 14px;
+      }
+
+      .daily-details summary {
+        cursor: pointer;
+        list-style: none;
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .daily-details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .daily-details[open] summary {
+        margin-bottom: 12px;
+      }
+
+      .range-card {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.76);
+      }
+
+      .range-card output {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+
+      .data-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .secondary-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      }
+
+      .file-wrap {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .file-wrap input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      dialog {
+        border: none;
+        padding: 0;
+        width: min(520px, calc(100vw - 30px));
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 26px 50px rgba(0, 0, 0, 0.24);
+      }
+
+      dialog::backdrop {
+        background: rgba(18, 26, 24, 0.36);
+        backdrop-filter: blur(6px);
+      }
+
+      .dialog-body {
+        padding: 24px;
+        background: var(--surface-strong);
+      }
+
+      .dialog-body h3 {
+        margin: 0 0 8px;
+      }
+
+      .dialog-body p {
+        margin: 0 0 18px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1160px) {
+        .column-sidebar {
+          position: static;
+        }
+
+        .hero-grid,
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .secondary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100vw - 18px, 100%);
+          margin: 10px auto 24px;
+        }
+
+        .hero {
+          padding: 22px;
+          border-radius: 30px;
+        }
+
+        .hero-metrics,
+        .summary-grid,
+        .range-grid,
+        .segmented {
+          grid-template-columns: 1fr;
+        }
+
+        .card-inner {
+          padding: 18px;
+        }
+
+        .planner-shell {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div id="app-status" class="app-status" hidden aria-live="polite"></div>
+      <header class="hero">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow"><span class="hero-brand">FitSchema</span> Praktijkplanner</div>
+            <h1>Schema voor vandaag opbouwen.</h1>
+            <p>Bouw je week in 3 stappen: oefening kiezen, dagen vullen, vandaag afwerken.</p>
+            <div class="hero-shortcuts">
+              <span class="shortcut">1. Oefeningen</span>
+              <span class="shortcut">2. Week plannen</span>
+              <span class="shortcut">3. Vandaag afwerken</span>
+            </div>
+            <div class="hero-metrics" id="hero-metrics"></div>
+          </div>
+          <aside class="hero-card">
+            <h2>Vandaag</h2>
+            <div class="quick-list">
+              <strong id="hero-date-label">Klaar voor een nieuw schema</strong>
+              <p>Open vandaag, vul de week en houd het scherm rustig.</p>
+            </div>
+          </aside>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="column column-sidebar">
+          <article class="card">
+            <div class="card-inner">
+              <div class="section-head">
+                <div>
+                  <div class="step-tag">Stap 1</div>
+                  <h2>Oefeningenbibliotheek</h2>
+                  <p>Voeg oefening toe.</p>
+                </div>
+                <div class="pill" id="library-count"></div>
+              </div>
+
+              <form id="exercise-form" class="stack">
+                <div class="row">
+                  <label class="field" style="flex-basis: 100%">
+                    <span>Naam oefening</span>
+                    <input
+                      id="exercise-name"
+                      type="text"
+                      required
+                      placeholder="Bijv. external rotation, bridge hold, dead bug"
+                    />
+                  </label>
+                </div>
+
+                <div class="row">
+                  <label class="field">
+                    <span>Focusgebied</span>
+                    <select id="exercise-category">
+                      <option value="hip">Heup</option>
+                      <option value="shoulder">Schouder</option>
+                      <option value="core">Core</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Type belasting</span>
+                    <select id="exercise-mode">
+                      <option value="hold">Herhalingen + vasthouden</option>
+                      <option value="simple">Herhalingen</option>
+                      <option value="duration">Duur per sessie</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="row">
+                  <label class="field" id="reps-field">
+                    <span>Standaard herhalingen</span>
+                    <input id="exercise-reps" type="number" min="1" value="10" required />
+                  </label>
+                  <label class="field" id="hold-field">
+                    <span>Vasthouden (sec)</span>
+                    <input id="exercise-hold" type="number" min="1" value="5" />
+                  </label>
+                  <label class="field" id="duration-field">
+                    <span>Duur per sessie (min)</span>
+                    <input id="exercise-duration" type="number" min="1" value="10" />
+                  </label>
+                  <label class="field">
+                    <span>Standaard sessies per dag</span>
+                    <input id="exercise-sessions" type="number" min="1" value="3" required />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span>Coach notitie</span>
+                  <textarea
+                    id="exercise-notes"
+                    placeholder="Techniekcue, tempo, regressie of aandachtspunt"
+                  ></textarea>
+                </label>
+
+                <div class="actions">
+                  <button type="submit" class="primary" id="save-exercise">Oefening opslaan</button>
+                  <button type="button" class="ghost" id="reset-form">Reset</button>
+                </div>
+              </form>
+
+              <div class="library-list" id="exercise-list" style="margin-top: 18px"></div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-inner">
+              <div class="section-head">
+                <div>
+                  <div class="step-tag">Stap 3</div>
+                  <h2>Vandaag</h2>
+                  <p>Werk af en noteer kort.</p>
+                </div>
+                <div class="pill" id="selected-date-pill"></div>
+              </div>
+
+              <div class="date-toolbar">
+                <input id="selected-date" type="date" />
+                <button type="button" class="ghost" id="today-btn">Ga naar vandaag</button>
+              </div>
+
+              <div class="daily-log-shell" style="margin-top: 16px">
+                <div class="summary-grid" id="daily-summary"></div>
+                <div class="daily-list" id="daily-list"></div>
+                <div class="timer-panel" id="timer-panel"></div>
+
+                <div class="daily-note-card">
+                  <label class="field">
+                    <span>Korte notitie</span>
+                    <textarea
+                      id="daily-note"
+                      placeholder="Korte observatie van vandaag"
+                    ></textarea>
+                  </label>
+                </div>
+
+                <details class="daily-details">
+                  <summary>Extra daggegevens</summary>
+                  <div class="range-grid">
+                    <div class="range-card">
+                      <label class="field">
+                        <span>Pijnscore</span>
+                        <input id="pain-score" type="range" min="0" max="10" value="0" />
+                      </label>
+                      <output id="pain-value">0</output>
+                    </div>
+                    <div class="range-card">
+                      <label class="field">
+                        <span>Beweeglijkheid</span>
+                        <input id="mobility-score" type="range" min="1" max="5" value="3" />
+                      </label>
+                      <output id="mobility-value">3</output>
+                    </div>
+                    <div class="range-card">
+                      <label class="field">
+                        <span>Tijd besteed (minuten)</span>
+                        <input id="minutes-spent" type="number" min="0" value="0" />
+                      </label>
+                      <output id="minutes-output">0</output>
+                    </div>
+                  </div>
+                </details>
+
+                <div class="actions">
+                  <button type="button" class="tonal" id="save-daily">Vandaag opslaan</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="column column-main">
+          <article class="card">
+            <div class="card-inner">
+              <div class="section-head">
+                <div>
+                  <div class="step-tag">Stap 2</div>
+                  <h2>Weekplanner</h2>
+                  <p>Sleep niet, kies en voeg toe.</p>
+                </div>
+                <div class="pill" id="week-label"></div>
+              </div>
+
+              <div class="planner-shell">
+                <div class="week-toolbar">
+                  <button type="button" class="ghost" id="prev-week">Vorige week</button>
+                  <input id="planner-week" type="date" />
+                  <button type="button" class="ghost" id="next-week">Volgende week</button>
+                  <button type="button" class="ghost" id="sync-selected-week">Week van vandaag</button>
+                </div>
+
+                <div class="planner-toolbar">
+                  <label class="field" style="max-width: 220px">
+                    <span>Dag</span>
+                    <select id="planner-day-select"></select>
+                  </label>
+                  <label class="field" style="min-width: 220px; flex: 1 1 280px">
+                    <span>Oefening</span>
+                    <select id="planner-exercise-select"></select>
+                  </label>
+                  <label class="field" style="max-width: 120px">
+                    <span>Sessies</span>
+                    <input id="planner-sessions" type="number" min="1" value="3" />
+                  </label>
+                </div>
+
+                <div class="row">
+                  <label class="field" id="planner-reps-field">
+                    <span>Herhalingen</span>
+                    <input id="planner-reps" type="number" min="1" value="10" />
+                  </label>
+                  <label class="field" id="planner-hold-field">
+                    <span>Vasthouden (sec)</span>
+                    <input id="planner-hold" type="number" min="1" value="5" />
+                  </label>
+                  <label class="field" id="planner-duration-field">
+                    <span>Duur (min)</span>
+                    <input id="planner-duration" type="number" min="1" value="10" />
+                  </label>
+                  <label class="field" style="flex: 2 1 320px">
+                    <span>Notitie</span>
+                    <textarea
+                      id="planner-note"
+                      placeholder="Tempo, cue of aandachtspunt"
+                    ></textarea>
+                  </label>
+                </div>
+
+                <div class="actions">
+                  <button type="button" class="primary" id="add-to-plan">Toevoegen aan dag</button>
+                  <button type="button" class="ghost" id="reset-plan-form">Reset</button>
+                  <button type="button" class="ghost" id="copy-previous-day">Kopieer gisteren</button>
+                  <label class="field" style="max-width: 180px">
+                    <span>Kopieer datum</span>
+                    <input id="copy-source-date" type="date" />
+                  </label>
+                  <button type="button" class="ghost" id="copy-from-date">Kopieer gekozen dag</button>
+                </div>
+              </div>
+
+              <div class="plan-grid" id="planner-grid" style="margin-top: 18px"></div>
+            </div>
+          </article>
+
+          <div class="secondary-grid">
+            <article class="card">
+              <div class="card-inner">
+                <div class="section-head">
+                  <div>
+                    <h2>Overzicht</h2>
+                    <p>Korte voortgang.</p>
+                  </div>
+                </div>
+
+                <div class="tab-buttons">
+                  <button type="button" class="active" data-view="day">Dag</button>
+                  <button type="button" data-view="week">Week</button>
+                  <button type="button" data-view="month">Maand</button>
+                </div>
+
+                <div id="overview"></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-inner">
+                <div class="section-head">
+                  <div>
+                    <h2>Data</h2>
+                    <p>Export of opnieuw starten.</p>
+                  </div>
+                </div>
+
+                <div class="data-actions">
+                  <button type="button" class="primary" id="export-btn">Export</button>
+                  <button type="button" class="ghost file-wrap">
+                    Import
+                    <input id="import-file" type="file" accept="application/json" />
+                  </button>
+                  <button type="button" class="danger" id="clear-btn">Wis alles</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="export-dialog">
+      <div class="dialog-body">
+        <h3>Export klaar</h3>
+        <p>Je volledige bibliotheek, weekplannen en daglogs staan klaar als JSON-back-up.</p>
+        <div class="actions">
+          <button type="button" class="primary" id="download-export">Download</button>
+          <button type="button" class="ghost" id="close-export">Sluiten</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      const STORAGE_KEY = "fitschema.v4.fresh-start";
+      const LEGACY_STORAGE_KEYS = ["fitschema.v3"];
+      const CATEGORY_LABELS = {
+        hip: "Heup",
+        shoulder: "Schouder",
+        core: "Core",
+      };
+      const DAY_NAMES = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
+      const statusElement = document.getElementById("app-status");
+
+      const state = loadState();
+      let editingExerciseId = null;
+      let activeTimer = null;
+      let statusTimer = null;
+      let exerciseIndex = buildExerciseIndex(state.exercises);
+
+      const el = {
+        heroMetrics: document.getElementById("hero-metrics"),
+        heroDateLabel: document.getElementById("hero-date-label"),
+        status: document.getElementById("app-status"),
+        libraryCount: document.getElementById("library-count"),
+        form: document.getElementById("exercise-form"),
+        name: document.getElementById("exercise-name"),
+        category: document.getElementById("exercise-category"),
+        mode: document.getElementById("exercise-mode"),
+        reps: document.getElementById("exercise-reps"),
+        repsField: document.getElementById("reps-field"),
+        hold: document.getElementById("exercise-hold"),
+        holdField: document.getElementById("hold-field"),
+        duration: document.getElementById("exercise-duration"),
+        durationField: document.getElementById("duration-field"),
+        sessions: document.getElementById("exercise-sessions"),
+        notes: document.getElementById("exercise-notes"),
+        saveExercise: document.getElementById("save-exercise"),
+        resetForm: document.getElementById("reset-form"),
+        exerciseList: document.getElementById("exercise-list"),
+        selectedDate: document.getElementById("selected-date"),
+        selectedDatePill: document.getElementById("selected-date-pill"),
+        todayBtn: document.getElementById("today-btn"),
+        dailySummary: document.getElementById("daily-summary"),
+        dailyList: document.getElementById("daily-list"),
+        pain: document.getElementById("pain-score"),
+        painValue: document.getElementById("pain-value"),
+        mobility: document.getElementById("mobility-score"),
+        mobilityValue: document.getElementById("mobility-value"),
+        minutes: document.getElementById("minutes-spent"),
+        minutesOutput: document.getElementById("minutes-output"),
+        note: document.getElementById("daily-note"),
+        saveDaily: document.getElementById("save-daily"),
+        timerPanel: document.getElementById("timer-panel"),
+        plannerWeek: document.getElementById("planner-week"),
+        weekLabel: document.getElementById("week-label"),
+        plannerDaySelect: document.getElementById("planner-day-select"),
+        plannerExerciseSelect: document.getElementById("planner-exercise-select"),
+        plannerSessions: document.getElementById("planner-sessions"),
+        plannerReps: document.getElementById("planner-reps"),
+        plannerRepsField: document.getElementById("planner-reps-field"),
+        plannerHold: document.getElementById("planner-hold"),
+        plannerHoldField: document.getElementById("planner-hold-field"),
+        plannerDuration: document.getElementById("planner-duration"),
+        plannerDurationField: document.getElementById("planner-duration-field"),
+        plannerNote: document.getElementById("planner-note"),
+        addToPlan: document.getElementById("add-to-plan"),
+        resetPlanForm: document.getElementById("reset-plan-form"),
+        copyPreviousDay: document.getElementById("copy-previous-day"),
+        copySourceDate: document.getElementById("copy-source-date"),
+        copyFromDate: document.getElementById("copy-from-date"),
+        plannerGrid: document.getElementById("planner-grid"),
+        prevWeek: document.getElementById("prev-week"),
+        nextWeek: document.getElementById("next-week"),
+        syncSelectedWeek: document.getElementById("sync-selected-week"),
+        tabs: document.querySelectorAll(".tab-buttons button"),
+        overview: document.getElementById("overview"),
+        exportBtn: document.getElementById("export-btn"),
+        exportDialog: document.getElementById("export-dialog"),
+        downloadExport: document.getElementById("download-export"),
+        closeExport: document.getElementById("close-export"),
+        importFile: document.getElementById("import-file"),
+        clearBtn: document.getElementById("clear-btn"),
+      };
+
+      init();
+
+      function createFallbackState() {
+        const selectedDate = todayISO();
+        return {
+          exercises: [],
+          plans: {},
+          logs: {},
+          selectedDate,
+          plannerWeekStart: toISO(startOfWeek(parseISO(selectedDate))),
+          view: "day",
+        };
+      }
+
+      function createEmptyLog() {
+        return {
+          exercises: {},
+          pain: 0,
+          mobility: 3,
+          minutes: 0,
+          note: "",
+        };
+      }
+
+      function buildExerciseIndex(exercises) {
+        return new Map(exercises.map((exercise) => [exercise.id, exercise]));
+      }
+
+      function refreshExerciseIndex() {
+        exerciseIndex = buildExerciseIndex(state.exercises);
+      }
+
+      function getExerciseById(exerciseId) {
+        return exerciseIndex.get(exerciseId) || null;
+      }
+
+      function showStatus(message, tone = "info") {
+        if (!statusElement) return;
+
+        if (!message) {
+          statusElement.hidden = true;
+          statusElement.textContent = "";
+          return;
+        }
+
+        statusElement.hidden = false;
+        statusElement.dataset.tone = tone;
+        statusElement.textContent = message;
+
+        if (statusTimer) clearTimeout(statusTimer);
+        if (tone !== "error") {
+          statusTimer = setTimeout(() => {
+            statusElement.hidden = true;
+            statusElement.textContent = "";
+          }, 3200);
+        }
+      }
+
+      function init() {
+        state.selectedDate = state.selectedDate || todayISO();
+        state.plannerWeekStart = state.plannerWeekStart || toISO(startOfWeek(parseISO(state.selectedDate)));
+        state.view = state.view || "day";
+        el.selectedDate.value = state.selectedDate;
+        el.plannerWeek.value = state.plannerWeekStart;
+        el.copySourceDate.value = addDaysISO(state.selectedDate, -1);
+        bindEvents();
+        populatePlannerControls();
+        toggleExerciseFields();
+        renderAll();
+      }
+
+      function bindEvents() {
+        el.mode.addEventListener("change", toggleExerciseFields);
+        el.form.addEventListener("submit", handleSaveExercise);
+        el.resetForm.addEventListener("click", resetExerciseForm);
+        el.exerciseList.addEventListener("click", handleLibraryClick);
+        el.selectedDate.addEventListener("change", () => {
+          state.selectedDate = el.selectedDate.value || todayISO();
+          el.selectedDate.value = state.selectedDate;
+          el.copySourceDate.value = addDaysISO(state.selectedDate, -1);
+          saveState();
+          renderAll();
+        });
+        el.todayBtn.addEventListener("click", () => {
+          state.selectedDate = todayISO();
+          el.selectedDate.value = state.selectedDate;
+          el.copySourceDate.value = addDaysISO(state.selectedDate, -1);
+          saveState();
+          renderAll();
+        });
+        el.dailyList.addEventListener("click", handleDailyAction);
+        el.pain.addEventListener("input", updateRangeReadouts);
+        el.mobility.addEventListener("input", updateRangeReadouts);
+        el.minutes.addEventListener("input", updateRangeReadouts);
+        el.saveDaily.addEventListener("click", saveDailyLog);
+        el.plannerExerciseSelect.addEventListener("change", syncPlannerInputsFromExercise);
+        el.addToPlan.addEventListener("click", addPlanItem);
+        el.resetPlanForm.addEventListener("click", resetPlannerForm);
+        el.copyPreviousDay.addEventListener("click", () => {
+          copyPlan(addDaysISO(getPlannerTargetDate(), -1), getPlannerTargetDate());
+        });
+        el.copyFromDate.addEventListener("click", () => {
+          copyPlan(el.copySourceDate.value, getPlannerTargetDate());
+        });
+        el.plannerGrid.addEventListener("click", handlePlannerGridClick);
+        el.prevWeek.addEventListener("click", () => shiftPlannerWeek(-7));
+        el.nextWeek.addEventListener("click", () => shiftPlannerWeek(7));
+        el.plannerWeek.addEventListener("change", () => {
+          state.plannerWeekStart = toISO(startOfWeek(parseISO(el.plannerWeek.value || todayISO())));
+          el.plannerWeek.value = state.plannerWeekStart;
+          populatePlannerControls();
+          saveState();
+          renderAll();
+        });
+        el.syncSelectedWeek.addEventListener("click", () => {
+          state.plannerWeekStart = toISO(startOfWeek(parseISO(state.selectedDate)));
+          el.plannerWeek.value = state.plannerWeekStart;
+          populatePlannerControls();
+          saveState();
+          renderAll();
+        });
+        el.tabs.forEach((tab) =>
+          tab.addEventListener("click", () => {
+            state.view = tab.dataset.view;
+            saveState();
+            renderOverview();
+          })
+        );
+        el.exportBtn.addEventListener("click", () => el.exportDialog.showModal());
+        el.closeExport.addEventListener("click", () => el.exportDialog.close());
+        el.downloadExport.addEventListener("click", downloadExport);
+        el.importFile.addEventListener("change", importData);
+        el.clearBtn.addEventListener("click", clearAll);
+      }
+
+      function loadState() {
+        const fallback = createFallbackState();
+
+        try {
+          LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return fallback;
+          const parsed = JSON.parse(raw);
+          return normalizeState(parsed, fallback);
+        } catch (error) {
+          showStatus("Opgeslagen gegevens konden niet worden gelezen. De app start met een lege staat.", "error");
+          return fallback;
+        }
+      }
+
+      function normalizeState(parsed, fallback) {
+        const exercises = Array.isArray(parsed.exercises)
+          ? parsed.exercises.map((exercise) => normalizeExercise(exercise))
+          : [];
+        const logs = normalizeLogs(parsed.logs || {});
+        const plans = normalizePlans(parsed.plans || {});
+
+        if (!Object.keys(plans).length && Array.isArray(parsed.exercises)) {
+          migrateLegacyPlans(parsed, plans, exercises);
+        }
+
+        const selectedDate = parsed.selectedDate || fallback.selectedDate;
+        return {
+          exercises,
+          plans,
+          logs,
+          selectedDate,
+          plannerWeekStart:
+            parsed.plannerWeekStart || toISO(startOfWeek(parseISO(selectedDate))),
+          view: parsed.view || fallback.view,
+        };
+      }
+
+      function normalizeExercise(exercise) {
+        return {
+          id: exercise.id || `ex-${Math.random().toString(36).slice(2, 9)}`,
+          name: String(exercise.name || "").trim(),
+          category: ["hip", "shoulder", "core"].includes(exercise.category)
+            ? exercise.category
+            : "hip",
+          mode: ["hold", "simple", "duration"].includes(exercise.mode)
+            ? exercise.mode
+            : "simple",
+          reps: Number(exercise.reps) || 0,
+          holdSeconds: Number(exercise.holdSeconds) || 0,
+          durationMinutes: Number(exercise.durationMinutes) || 0,
+          sessionsPerDay: Number(exercise.sessionsPerDay) || 1,
+          notes: String(exercise.notes || "").trim(),
+          archived: Boolean(exercise.archived),
+        };
+      }
+
+      function normalizePlans(plans) {
+        const normalized = {};
+        Object.entries(plans).forEach(([dateISO, plan]) => {
+          const items = Array.isArray(plan?.items)
+            ? plan.items
+                .map((item) => normalizePlanItem(item))
+                .filter((item) => item.exerciseId)
+            : Array.isArray(plan)
+              ? plan.map((item) => normalizePlanItem(item)).filter((item) => item.exerciseId)
+              : [];
+          if (items.length) {
+            normalized[dateISO] = { items };
+          }
+        });
+        return normalized;
+      }
+
+      function normalizePlanItem(item) {
+        return {
+          id: item.id || `pl-${Math.random().toString(36).slice(2, 9)}`,
+          exerciseId: item.exerciseId || item.id || "",
+          sessionsPerDay: Number(item.sessionsPerDay) || 1,
+          mode: ["hold", "simple", "duration"].includes(item.mode) ? item.mode : "simple",
+          reps: Number(item.reps) || 0,
+          holdSeconds: Number(item.holdSeconds) || 0,
+          durationMinutes: Number(item.durationMinutes) || 0,
+          notes: String(item.notes || "").trim(),
+        };
+      }
+
+      function normalizeLogs(logs) {
+        const normalized = {};
+        Object.entries(logs || {}).forEach(([dateISO, log]) => {
+          const exercises = {};
+          Object.entries(log?.exercises || {}).forEach(([exerciseId, entry]) => {
+            exercises[exerciseId] = { completed: Math.max(0, Number(entry?.completed) || 0) };
+          });
+          normalized[dateISO] = {
+            exercises,
+            pain: Number(log?.pain) || 0,
+            mobility: Number(log?.mobility) || 3,
+            minutes: Number(log?.minutes) || 0,
+            note: String(log?.note || "").trim(),
+          };
+        });
+        return normalized;
+      }
+
+      function migrateLegacyPlans(parsed, plans, exercises) {
+        const exerciseLookup = buildExerciseIndex(exercises);
+        const dates = new Set([parsed.selectedDate || todayISO(), ...Object.keys(parsed.logs || {})]);
+        dates.forEach((dateISO) => {
+          const activeExercises = exercises.filter((exercise) => !exercise.archived);
+          const loggedIds = Object.keys(parsed.logs?.[dateISO]?.exercises || {});
+          const combinedIds = [...new Set([...activeExercises.map((exercise) => exercise.id), ...loggedIds])];
+          if (!combinedIds.length) return;
+          plans[dateISO] = {
+            items: combinedIds
+              .map((exerciseId) => {
+                const exercise = exerciseLookup.get(exerciseId);
+                if (!exercise) return null;
+                return {
+                  id: `pl-${exercise.id}-${dateISO}`,
+                  exerciseId: exercise.id,
+                  sessionsPerDay: exercise.sessionsPerDay,
+                  mode: exercise.mode,
+                  reps: exercise.reps,
+                  holdSeconds: exercise.holdSeconds,
+                  durationMinutes: exercise.durationMinutes,
+                  notes: "",
+                };
+              })
+              .filter(Boolean),
+          };
+        });
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          return true;
+        } catch (error) {
+          showStatus("Opslaan in de browser is mislukt. Controleer opslagruimte of privacy-instellingen.", "error");
+          return false;
+        }
+      }
+
+      function todayISO() {
+        return toISO(new Date());
+      }
+
+      function parseISO(value) {
+        const [year, month, day] = String(value).split("-").map(Number);
+        return new Date(year, month - 1, day);
+      }
+
+      function toISO(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function addDays(date, amount) {
+        const next = new Date(date);
+        next.setDate(next.getDate() + amount);
+        return next;
+      }
+
+      function addDaysISO(dateISO, amount) {
+        return toISO(addDays(parseISO(dateISO), amount));
+      }
+
+      function startOfWeek(date) {
+        const copy = new Date(date);
+        const day = copy.getDay();
+        const diff = (day === 0 ? -6 : 1) - day;
+        copy.setDate(copy.getDate() + diff);
+        copy.setHours(0, 0, 0, 0);
+        return copy;
+      }
+
+      function monthDays(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const last = new Date(year, month + 1, 0).getDate();
+        return Array.from({ length: last }, (_, index) => new Date(year, month, index + 1));
+      }
+
+      function formatDate(date) {
+        return new Intl.DateTimeFormat("nl-NL", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        }).format(date);
+      }
+
+      function formatDateShort(date) {
+        return new Intl.DateTimeFormat("nl-NL", {
+          day: "2-digit",
+          month: "2-digit",
+        }).format(date);
+      }
+
+      function formatWeekRange(startISO) {
+        const start = parseISO(startISO);
+        const end = addDays(start, 6);
+        return `${formatDateShort(start)} - ${formatDateShort(end)}`;
+      }
+
+      function formatTimer(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = String(totalSeconds % 60).padStart(2, "0");
+        return `${minutes}:${seconds}`;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function toggleExerciseFields() {
+        const mode = el.mode.value;
+        const isHold = mode === "hold";
+        const isDuration = mode === "duration";
+        el.repsField.style.display = isDuration ? "none" : "grid";
+        el.holdField.style.display = isHold ? "grid" : "none";
+        el.durationField.style.display = isDuration ? "grid" : "none";
+        el.reps.required = !isDuration;
+        el.duration.required = isDuration;
+      }
+
+      function resetExerciseForm() {
+        editingExerciseId = null;
+        el.form.reset();
+        el.category.value = "hip";
+        el.mode.value = "hold";
+        el.reps.value = 10;
+        el.hold.value = 5;
+        el.duration.value = 10;
+        el.sessions.value = 3;
+        updateExerciseButtonLabel();
+        toggleExerciseFields();
+      }
+
+      function updateExerciseButtonLabel() {
+        el.saveExercise.textContent = editingExerciseId ? "Wijzig oefening" : "Oefening opslaan";
+      }
+
+      function handleSaveExercise(event) {
+        event.preventDefault();
+        const exercise = {
+          id: editingExerciseId || `ex-${Date.now().toString(36)}`,
+          name: el.name.value.trim(),
+          category: el.category.value,
+          mode: el.mode.value,
+          reps: el.mode.value === "duration" ? 0 : Number(el.reps.value),
+          holdSeconds: el.mode.value === "hold" ? Number(el.hold.value) : 0,
+          durationMinutes: el.mode.value === "duration" ? Number(el.duration.value) : 0,
+          sessionsPerDay: Number(el.sessions.value) || 1,
+          notes: el.notes.value.trim(),
+          archived: false,
+        };
+
+        if (!exercise.name) return;
+
+        if (editingExerciseId) {
+          state.exercises = state.exercises.map((item) =>
+            item.id === editingExerciseId ? exercise : item
+          );
+          updatePlanItemsForExercise(exercise);
+        } else {
+          state.exercises.push(exercise);
+        }
+
+        refreshExerciseIndex();
+        saveState();
+        populatePlannerControls();
+        resetExerciseForm();
+        renderAll();
+        showStatus("Oefening opgeslagen.", "success");
+      }
+
+      function updatePlanItemsForExercise(exercise) {
+        Object.values(state.plans).forEach((plan) => {
+          plan.items = plan.items.map((item) =>
+            item.exerciseId === exercise.id
+              ? {
+                  ...item,
+                  mode: exercise.mode,
+                  reps: exercise.mode === "duration" ? 0 : exercise.reps,
+                  holdSeconds: exercise.mode === "hold" ? exercise.holdSeconds : 0,
+                  durationMinutes: exercise.mode === "duration" ? exercise.durationMinutes : 0,
+                }
+              : item
+          );
+        });
+      }
+
+      function handleLibraryClick(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const exerciseId = button.dataset.id;
+        const exercise = getExerciseById(exerciseId);
+        if (!exercise) return;
+
+        if (button.dataset.action === "edit") {
+          editingExerciseId = exercise.id;
+          el.name.value = exercise.name;
+          el.category.value = exercise.category;
+          el.mode.value = exercise.mode;
+          el.reps.value = exercise.reps || 10;
+          el.hold.value = exercise.holdSeconds || 5;
+          el.duration.value = exercise.durationMinutes || 10;
+          el.sessions.value = exercise.sessionsPerDay || 3;
+          el.notes.value = exercise.notes || "";
+          updateExerciseButtonLabel();
+          toggleExerciseFields();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+
+        if (button.dataset.action === "archive") {
+          exercise.archived = true;
+          Object.values(state.plans).forEach((plan) => {
+            plan.items = plan.items.filter((item) => item.exerciseId !== exercise.id);
+          });
+          saveState();
+          populatePlannerControls();
+          renderAll();
+          showStatus("Oefening gearchiveerd en uit de planner verwijderd.", "success");
+        }
+      }
+
+      function populatePlannerControls() {
+        const weekDates = getWeekDates(state.plannerWeekStart);
+        el.plannerDaySelect.innerHTML = weekDates
+          .map(
+            (dateISO, index) =>
+              `<option value="${dateISO}">${DAY_NAMES[index]} · ${formatDateShort(
+                parseISO(dateISO)
+              )}</option>`
+          )
+          .join("");
+        if (!weekDates.includes(el.plannerDaySelect.value)) {
+          el.plannerDaySelect.value = weekDates[0];
+        }
+
+        const activeExercises = getActiveExercises();
+        el.plannerExerciseSelect.innerHTML = activeExercises.length
+          ? activeExercises
+              .map(
+                (exercise) =>
+                  `<option value="${exercise.id}">${escapeHtml(exercise.name)} · ${
+                    CATEGORY_LABELS[exercise.category]
+                  }</option>`
+              )
+              .join("")
+          : `<option value="">Voeg eerst een oefening toe</option>`;
+
+        syncPlannerInputsFromExercise();
+      }
+
+      function getActiveExercises() {
+        return state.exercises.filter((exercise) => !exercise.archived);
+      }
+
+      function syncPlannerInputsFromExercise() {
+        const exercise = getSelectedPlannerExercise();
+        if (!exercise) {
+          el.plannerSessions.value = 1;
+          el.plannerRepsField.style.display = "grid";
+          el.plannerHoldField.style.display = "none";
+          el.plannerDurationField.style.display = "none";
+          return;
+        }
+
+        el.plannerSessions.value = exercise.sessionsPerDay || 1;
+        el.plannerReps.value = exercise.reps || 10;
+        el.plannerHold.value = exercise.holdSeconds || 5;
+        el.plannerDuration.value = exercise.durationMinutes || 10;
+
+        const isHold = exercise.mode === "hold";
+        const isDuration = exercise.mode === "duration";
+        el.plannerRepsField.style.display = isDuration ? "none" : "grid";
+        el.plannerHoldField.style.display = isHold ? "grid" : "none";
+        el.plannerDurationField.style.display = isDuration ? "grid" : "none";
+      }
+
+      function getSelectedPlannerExercise() {
+        return getExerciseById(el.plannerExerciseSelect.value);
+      }
+
+      function resetPlannerForm(keepStatus = false) {
+        el.plannerNote.value = "";
+        syncPlannerInputsFromExercise();
+        if (!keepStatus) showStatus("Planner-formulier gereset.", "info");
+      }
+
+      function readPlan(dateISO) {
+        return state.plans[dateISO] || null;
+      }
+
+      function ensurePlan(dateISO) {
+        if (!state.plans[dateISO]) {
+          state.plans[dateISO] = { items: [] };
+        }
+        return state.plans[dateISO];
+      }
+
+      function readLog(dateISO) {
+        return state.logs[dateISO] || null;
+      }
+
+      function ensureLog(dateISO) {
+        if (!state.logs[dateISO]) {
+          state.logs[dateISO] = createEmptyLog();
+        }
+        return state.logs[dateISO];
+      }
+
+      function addPlanItem() {
+        const dateISO = getPlannerTargetDate();
+        const exercise = getSelectedPlannerExercise();
+        if (!dateISO || !exercise) return;
+
+        const plan = ensurePlan(dateISO);
+        plan.items.push({
+          id: `pl-${Date.now().toString(36)}`,
+          exerciseId: exercise.id,
+          sessionsPerDay: Number(el.plannerSessions.value) || 1,
+          mode: exercise.mode,
+          reps: exercise.mode === "duration" ? 0 : Number(el.plannerReps.value) || exercise.reps,
+          holdSeconds:
+            exercise.mode === "hold" ? Number(el.plannerHold.value) || exercise.holdSeconds : 0,
+          durationMinutes:
+            exercise.mode === "duration"
+              ? Number(el.plannerDuration.value) || exercise.durationMinutes
+              : 0,
+          notes: el.plannerNote.value.trim(),
+        });
+
+        saveState();
+        resetPlannerForm(true);
+        renderAll();
+        showStatus("Planregel toegevoegd.", "success");
+      }
+
+      function handlePlannerGridClick(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const dateISO = button.dataset.date;
+        if (!dateISO) return;
+
+        if (button.dataset.action === "set-selected") {
+          state.selectedDate = dateISO;
+          el.selectedDate.value = dateISO;
+          el.copySourceDate.value = addDaysISO(dateISO, -1);
+          saveState();
+          renderAll();
+          return;
+        }
+
+        if (button.dataset.action === "copy-previous") {
+          copyPlan(addDaysISO(dateISO, -1), dateISO);
+          return;
+        }
+
+        if (button.dataset.action === "clear-day") {
+          ensurePlan(dateISO).items = [];
+          saveState();
+          renderAll();
+          showStatus("Dagplanning leeggemaakt.", "success");
+          return;
+        }
+
+        if (button.dataset.action === "remove-item") {
+          const planId = button.dataset.planId;
+          const plan = ensurePlan(dateISO);
+          plan.items = plan.items.filter((item) => item.id !== planId);
+          saveState();
+          renderAll();
+          showStatus("Planregel verwijderd.", "success");
+        }
+      }
+
+      function getPlannerTargetDate() {
+        return el.plannerDaySelect.value || getWeekDates(state.plannerWeekStart)[0];
+      }
+
+      function copyPlan(sourceDateISO, targetDateISO) {
+        if (!sourceDateISO || !targetDateISO || sourceDateISO === targetDateISO) return;
+        const sourceItems = readPlan(sourceDateISO)?.items || [];
+        const targetPlan = ensurePlan(targetDateISO);
+        targetPlan.items = sourceItems.map((item) => ({
+          ...item,
+          id: `pl-${Math.random().toString(36).slice(2, 10)}`,
+        }));
+        saveState();
+        renderAll();
+        showStatus(
+          sourceItems.length
+            ? "Planning gekopieerd."
+            : "Bron-dag had geen planregels om te kopieren.",
+          sourceItems.length ? "success" : "info"
+        );
+      }
+
+      function saveDailyLog() {
+        const log = ensureLog(state.selectedDate);
+        log.pain = Number(el.pain.value) || 0;
+        log.mobility = Number(el.mobility.value) || 3;
+        log.minutes = Number(el.minutes.value) || 0;
+        log.note = el.note.value.trim();
+        saveState();
+        renderAll();
+        showStatus("Daglog opgeslagen.", "success");
+      }
+
+      function handleDailyAction(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const action = button.dataset.action;
+        const itemId = button.dataset.id;
+        const planItem = getPlanItemsForDate(state.selectedDate).find((item) => item.id === itemId);
+        if (!planItem) return;
+
+        const log = ensureLog(state.selectedDate);
+        const entry = log.exercises[itemId] || { completed: 0 };
+        const target = planItem.sessionsPerDay;
+
+        if (action === "inc") entry.completed = Math.min(target, entry.completed + 1);
+        if (action === "dec") entry.completed = Math.max(0, entry.completed - 1);
+        if (action === "done") entry.completed = target;
+        if (action === "timer") {
+          const seconds =
+            planItem.mode === "duration" ? planItem.durationMinutes * 60 : planItem.holdSeconds;
+          startTimer(seconds, planItem.name);
+          return;
+        }
+
+        log.exercises[itemId] = entry;
+        saveState();
+        renderAll();
+      }
+
+      function startTimer(seconds, name) {
+        if (!seconds) return;
+        if (activeTimer) clearInterval(activeTimer);
+        let remaining = seconds;
+        el.timerPanel.style.display = "block";
+        el.timerPanel.textContent = `${name}: ${formatTimer(remaining)}`;
+        activeTimer = setInterval(() => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            clearInterval(activeTimer);
+            activeTimer = null;
+            el.timerPanel.textContent = `${name}: klaar`;
+            return;
+          }
+          el.timerPanel.textContent = `${name}: ${formatTimer(remaining)}`;
+        }, 1000);
+      }
+
+      function updateRangeReadouts() {
+        el.painValue.textContent = el.pain.value;
+        el.mobilityValue.textContent = el.mobility.value;
+        el.minutesOutput.textContent = el.minutes.value;
+      }
+      
+      function renderAll() {
+        renderHeroMetrics();
+        renderLibrary();
+        renderPlanner();
+        renderDaily();
+        renderOverview();
+      }
+
+      function renderHeroMetrics() {
+        const totals = calculateTotals(state.selectedDate);
+        const activeExercises = getActiveExercises().length;
+        const plannedThisWeek = getWeekDates(state.plannerWeekStart).reduce(
+          (sum, dateISO) => sum + (readPlan(dateISO)?.items.length || 0),
+          0
+        );
+        el.heroDateLabel.textContent = `Geselecteerd: ${formatDate(parseISO(state.selectedDate))}`;
+        el.heroMetrics.innerHTML = `
+          <div class="metric">
+            <strong>${activeExercises}</strong>
+            <span>oefeningen</span>
+          </div>
+          <div class="metric">
+            <strong>${plannedThisWeek}</strong>
+            <span>deze week</span>
+          </div>
+          <div class="metric">
+            <strong>${totals.percent}%</strong>
+            <span>vandaag klaar</span>
+          </div>
+        `;
+      }
+
+      function renderLibrary() {
+        const exercises = getActiveExercises();
+        el.libraryCount.textContent = `${exercises.length} actief`;
+        updateExerciseButtonLabel();
+
+        if (!exercises.length) {
+          el.exerciseList.innerHTML =
+            `<div class="empty">Nog leeg. Voeg je eerste oefening toe.</div>`;
+          return;
+        }
+
+        el.exerciseList.innerHTML = exercises
+          .map((exercise) => {
+            const notes = exercise.notes ? `<div class="hint">${escapeHtml(exercise.notes)}</div>` : "";
+            return `
+              <div class="library-item">
+                <div class="library-item-header">
+                  <div>
+                    <h3>${escapeHtml(exercise.name)}</h3>
+                    <div class="badges">
+                      <span class="badge ${exercise.category}">${CATEGORY_LABELS[exercise.category]}</span>
+                      <span class="badge">${escapeHtml(getExerciseDescription(exercise))}</span>
+                      <span class="badge">${exercise.sessionsPerDay} sessies standaard</span>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button type="button" class="ghost" data-action="edit" data-id="${exercise.id}">
+                      Bewerk
+                    </button>
+                    <button type="button" class="ghost" data-action="archive" data-id="${exercise.id}">
+                      Archiveer
+                    </button>
+                  </div>
+                </div>
+                ${notes}
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderPlanner() {
+        const weekDates = getWeekDates(state.plannerWeekStart);
+        el.weekLabel.textContent = formatWeekRange(state.plannerWeekStart);
+        el.plannerWeek.value = state.plannerWeekStart;
+        if (!weekDates.includes(el.plannerDaySelect.value)) {
+          el.plannerDaySelect.value = weekDates[0];
+        }
+
+        el.plannerGrid.innerHTML = weekDates
+          .map((dateISO, index) => renderPlannerDay(dateISO, index))
+          .join("");
+      }
+
+      function renderPlannerDay(dateISO, index) {
+        const plan = readPlan(dateISO) || { items: [] };
+        const items = plan.items
+          .map((item) => {
+            const exercise = getExerciseById(item.exerciseId);
+            if (!exercise) return "";
+            const notes = item.notes ? `<div class="meta">${escapeHtml(item.notes)}</div>` : "";
+            return `
+              <div class="plan-item">
+                <div class="plan-item-top">
+                  <div>
+                    <div class="plan-item-title">${escapeHtml(exercise.name)}</div>
+                    <div class="meta">${CATEGORY_LABELS[exercise.category]} · ${getExerciseDescription(item)}</div>
+                    <div class="meta">${item.sessionsPerDay} sessies op deze dag</div>
+                  </div>
+                  <button
+                    type="button"
+                    class="icon-btn"
+                    data-action="remove-item"
+                    data-date="${dateISO}"
+                    data-plan-id="${item.id}"
+                    aria-label="Verwijder planregel"
+                  >
+                    ×
+                  </button>
+                </div>
+                ${notes}
+              </div>
+            `;
+          })
+          .join("");
+
+        return `
+          <div class="planner-day ${dateISO === state.selectedDate ? "active" : ""}">
+            <div class="planner-day-head">
+              <div>
+                <h3>${DAY_NAMES[index]}</h3>
+                <small>${formatDate(parseISO(dateISO))}</small>
+              </div>
+              <div class="date-chip">${plan.items.length}</div>
+            </div>
+            <div class="planner-actions">
+              <button type="button" class="ghost" data-action="set-selected" data-date="${dateISO}">
+                Open
+              </button>
+              <button type="button" class="ghost" data-action="copy-previous" data-date="${dateISO}">
+                Kopieer
+              </button>
+              <button type="button" class="ghost" data-action="clear-day" data-date="${dateISO}">
+                Leeg
+              </button>
+            </div>
+            ${items || `<div class="empty" style="margin-top: 12px">Nog geen oefeningen ingepland.</div>`}
+          </div>
+        `;
+      }
+
+      function renderDaily() {
+        const date = parseISO(state.selectedDate);
+        const log = readLog(state.selectedDate) || createEmptyLog();
+        const items = getPlanItemsForDate(state.selectedDate);
+        const totals = calculateTotals(state.selectedDate);
+
+        el.selectedDatePill.textContent = formatDate(date);
+        el.pain.value = log.pain || 0;
+        el.mobility.value = log.mobility || 3;
+        el.minutes.value = log.minutes || 0;
+        el.note.value = log.note || "";
+        updateRangeReadouts();
+
+        el.dailySummary.innerHTML = `
+          <div class="summary-card">
+            <strong>${totals.percent}%</strong>
+            <span>klaar</span>
+          </div>
+          <div class="summary-card">
+            <strong>${totals.completed}/${totals.target}</strong>
+            <span>sessies</span>
+          </div>
+          <div class="summary-card">
+            <strong>${totals.streak}</strong>
+            <span>streak</span>
+          </div>
+          <div class="summary-card">
+            <strong>${items.length}</strong>
+            <span>oefeningen</span>
+          </div>
+        `;
+
+        if (!items.length) {
+          el.dailyList.innerHTML =
+            `<div class="empty">Nog niets gepland voor deze dag.</div>`;
+          return;
+        }
+
+        el.dailyList.innerHTML = items
+          .map((item) => {
+            const entry = log.exercises[item.id] || { completed: 0 };
+            const completed = Math.min(entry.completed, item.sessionsPerDay);
+            const percent = Math.round((completed / item.sessionsPerDay) * 100) || 0;
+            const notes = item.notes ? `<div class="hint">${escapeHtml(item.notes)}</div>` : "";
+
+            return `
+              <div class="daily-item">
+                <div class="daily-item-header">
+                  <div>
+                    <h3>${escapeHtml(item.name)}</h3>
+                    <div class="meta">${CATEGORY_LABELS[item.category]} · ${getExerciseDescription(item)}</div>
+                    ${notes}
+                  </div>
+                  <div class="counter">${completed}/${item.sessionsPerDay}</div>
+                </div>
+                <div class="daily-actions">
+                  <button type="button" class="ghost" data-action="dec" data-id="${item.id}">-</button>
+                  <button type="button" class="ghost" data-action="inc" data-id="${item.id}">+</button>
+                  <button type="button" class="tonal" data-action="done" data-id="${item.id}">Voltooi</button>
+                  ${
+                    item.mode === "hold" || item.mode === "duration"
+                      ? `<button type="button" class="ghost" data-action="timer" data-id="${item.id}">Timer</button>`
+                      : ""
+                  }
+                </div>
+                <div class="progress">
+                  <span style="width:${percent}%"></span>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderOverview() {
+        el.tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.view === state.view));
+
+        if (!hasAnyPlans()) {
+          el.overview.innerHTML =
+            `<div class="empty">Hier verschijnt je voortgang zodra je plant.</div>`;
+          return;
+        }
+
+        if (state.view === "day") {
+          const totals = calculateTotals(state.selectedDate);
+          el.overview.innerHTML = `
+            <div class="summary-grid">
+              <div class="summary-card">
+                <strong>${totals.percent}%</strong>
+                <span>dag</span>
+              </div>
+              <div class="summary-card">
+                <strong>${totals.week}%</strong>
+                <span>7 dagen</span>
+              </div>
+              <div class="summary-card">
+                <strong>${totals.month}%</strong>
+                <span>30 dagen</span>
+              </div>
+              <div class="summary-card">
+                <strong>${totals.streak}</strong>
+                <span>streak</span>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        if (state.view === "week") {
+          el.overview.innerHTML = `
+            <div class="calendar-grid">
+              ${getWeekDates(toISO(startOfWeek(parseISO(state.selectedDate)))).map(renderCalendarCell).join("")}
+            </div>
+          `;
+          return;
+        }
+
+        el.overview.innerHTML = `
+          <div class="calendar-grid">
+            ${monthDays(parseISO(state.selectedDate)).map(renderCalendarCell).join("")}
+          </div>
+        `;
+      }
+
+      function renderCalendarCell(date) {
+        const iso = toISO(date);
+        const totals = calculateTotals(iso);
+        const completeClass = totals.percent === 100 ? "complete" : "";
+        return `
+          <div class="calendar-cell ${completeClass}">
+            <div class="meta">${formatDateShort(date)}</div>
+            <strong>${totals.percent}%</strong>
+            <div class="bar"><span style="width:${totals.percent}%"></span></div>
+          </div>
+        `;
+      }
+
+      function getWeekDates(startISO) {
+        const start = parseISO(startISO);
+        return Array.from({ length: 7 }, (_, index) => toISO(addDays(start, index)));
+      }
+
+      function getPlanItemsForDate(dateISO) {
+        const plan = readPlan(dateISO);
+        if (!plan) return [];
+
+        return plan.items
+          .map((item) => {
+            const exercise = getExerciseById(item.exerciseId);
+            if (!exercise) return null;
+            return {
+              ...item,
+              name: exercise.name,
+              category: exercise.category,
+            };
+          })
+          .filter(Boolean);
+      }
+
+      function getExerciseDescription(item) {
+        if (item.mode === "hold") return `${item.reps} herhalingen, ${item.holdSeconds}s hold`;
+        if (item.mode === "duration") return `${item.durationMinutes} minuten per sessie`;
+        return `${item.reps} herhalingen per sessie`;
+      }
+
+      function calculateTotals(dateISO) {
+        const items = getPlanItemsForDate(dateISO);
+        const log = readLog(dateISO) || createEmptyLog();
+        let target = 0;
+        let completed = 0;
+        items.forEach((item) => {
+          const entry = log.exercises[item.id] || { completed: 0 };
+          target += item.sessionsPerDay;
+          completed += Math.min(entry.completed, item.sessionsPerDay);
+        });
+        const percent = target ? Math.round((completed / target) * 100) : 0;
+        return {
+          target,
+          completed,
+          percent,
+          week: averageForRange(dateISO, 7),
+          month: averageForRange(dateISO, 30),
+          streak: calculateStreak(dateISO),
+        };
+      }
+
+      function averageForRange(dateISO, days) {
+        let total = 0;
+        const date = parseISO(dateISO);
+        for (let i = 0; i < days; i += 1) {
+          total += calculateDayPercent(toISO(addDays(date, -i)));
+        }
+        return Math.round(total / days);
+      }
+
+      function calculateDayPercent(dateISO) {
+        const items = getPlanItemsForDate(dateISO);
+        const log = readLog(dateISO) || createEmptyLog();
+        let target = 0;
+        let completed = 0;
+        items.forEach((item) => {
+          const entry = log.exercises[item.id] || { completed: 0 };
+          target += item.sessionsPerDay;
+          completed += Math.min(entry.completed, item.sessionsPerDay);
+        });
+        return target ? Math.round((completed / target) * 100) : 0;
+      }
+
+      function calculateStreak(dateISO) {
+        let streak = 0;
+        let cursor = parseISO(dateISO);
+        while (true) {
+          const percent = calculateDayPercent(toISO(cursor));
+          if (percent < 100 || percent === 0) break;
+          streak += 1;
+          cursor = addDays(cursor, -1);
+        }
+        return streak;
+      }
+
+      function hasAnyPlans() {
+        return Object.values(state.plans).some((plan) => Array.isArray(plan.items) && plan.items.length);
+      }
+
+      function shiftPlannerWeek(offsetDays) {
+        state.plannerWeekStart = addDaysISO(state.plannerWeekStart, offsetDays);
+        el.plannerWeek.value = state.plannerWeekStart;
+        populatePlannerControls();
+        saveState();
+        renderAll();
+      }
+
+      function downloadExport() {
+        const data = JSON.stringify(state, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `fitschema-pro-${todayISO()}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        el.exportDialog.close();
+      }
+
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (file.type && file.type !== "application/json") {
+          showStatus("Import verwacht een JSON-bestand.", "error");
+          event.target.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            const nextState = normalizeState(parsed, createFallbackState());
+            state.exercises = nextState.exercises;
+            state.plans = nextState.plans;
+            state.logs = nextState.logs;
+            state.selectedDate = nextState.selectedDate;
+            state.plannerWeekStart = nextState.plannerWeekStart;
+            state.view = nextState.view;
+            refreshExerciseIndex();
+            el.selectedDate.value = state.selectedDate;
+            el.plannerWeek.value = state.plannerWeekStart;
+            el.copySourceDate.value = addDaysISO(state.selectedDate, -1);
+            saveState();
+            populatePlannerControls();
+            renderAll();
+            showStatus("Import gelukt.", "success");
+          } catch (error) {
+            showStatus("Import mislukt. Controleer of het bestand geldige FitSchema-JSON bevat.", "error");
+          }
+        };
+        reader.onerror = () => {
+          showStatus("Bestand kon niet worden gelezen.", "error");
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      function clearAll() {
+        if (!confirm("Weet je zeker dat je bibliotheek, weekplannen en logs wilt wissen?")) return;
+        state.exercises = [];
+        state.plans = {};
+        state.logs = {};
+        state.selectedDate = todayISO();
+        state.plannerWeekStart = toISO(startOfWeek(parseISO(state.selectedDate)));
+        state.view = "day";
+        refreshExerciseIndex();
+        el.selectedDate.value = state.selectedDate;
+        el.plannerWeek.value = state.plannerWeekStart;
+        el.copySourceDate.value = addDaysISO(state.selectedDate, -1);
+        resetExerciseForm();
+        populatePlannerControls();
+        saveState();
+        renderAll();
+        showStatus("Alle lokale gegevens zijn gewist.", "success");
+      }
+    </script>
+  </body>
+</html>
