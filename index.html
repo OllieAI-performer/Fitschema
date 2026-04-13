@@ -1311,10 +1311,9 @@
 
       function createFallbackState() {
         const selectedDate = todayISO();
-        const starter = createStarterProgram(selectedDate);
         return {
-          exercises: starter.exercises,
-          plans: starter.plans,
+          exercises: [],
+          plans: {},
           logs: {},
           selectedDate,
           plannerWeekStart: toISO(startOfWeek(parseISO(selectedDate))),
@@ -1329,106 +1328,6 @@
           mobility: 3,
           minutes: 0,
           note: "",
-        };
-      }
-
-      function createStarterProgram(selectedDate) {
-        const mondayISO = toISO(startOfWeek(parseISO(selectedDate)));
-        const wednesdayISO = addDaysISO(mondayISO, 2);
-
-        const exercises = [
-          {
-            id: "seed-adductor",
-            name: "Adductor",
-            category: "hip",
-            mode: "simple",
-            reps: 20,
-            holdSeconds: 0,
-            durationMinutes: 0,
-            sessionsPerDay: 2,
-            notes: "WhatsApp-foto: 20 kg, 2 dagen. Controleer exacte notatie.",
-            archived: false,
-          },
-          {
-            id: "seed-abductor",
-            name: "Abductor",
-            category: "hip",
-            mode: "simple",
-            reps: 20,
-            holdSeconds: 0,
-            durationMinutes: 0,
-            sessionsPerDay: 2,
-            notes: "WhatsApp-foto: stand 1, 2x20, 2 dagen.",
-            archived: false,
-          },
-          {
-            id: "seed-leg-press",
-            name: "Leg press",
-            category: "hip",
-            mode: "simple",
-            reps: 5,
-            holdSeconds: 0,
-            durationMinutes: 0,
-            sessionsPerDay: 2,
-            notes: "WhatsApp-foto: 40 kg, 2 dagen. Tekst lijkt '2x belast 1 been'.",
-            archived: false,
-          },
-          {
-            id: "seed-leg-extension",
-            name: "Leg extension",
-            category: "hip",
-            mode: "simple",
-            reps: 12,
-            holdSeconds: 0,
-            durationMinutes: 0,
-            sessionsPerDay: 2,
-            notes: "WhatsApp-foto: 2 dagen, laatste notatie lijkt 2x12.",
-            archived: false,
-          },
-          {
-            id: "seed-leg-curl",
-            name: "Leg curl",
-            category: "hip",
-            mode: "simple",
-            reps: 12,
-            holdSeconds: 0,
-            durationMinutes: 0,
-            sessionsPerDay: 2,
-            notes: "Overgenomen van WhatsApp-foto. Exacte dosering later controleren.",
-            archived: false,
-          },
-          {
-            id: "seed-wall-sit",
-            name: "Wall sit",
-            category: "core",
-            mode: "hold",
-            reps: 2,
-            holdSeconds: 20,
-            durationMinutes: 0,
-            sessionsPerDay: 1,
-            notes: "WhatsApp-foto: 2x20 seconden, 2 dagen.",
-            archived: false,
-          },
-        ];
-
-        const buildItemsForDate = (dateISO) =>
-          exercises.map((exercise) => ({
-            id: `pl-${exercise.id}-${dateISO}`,
-            exerciseId: exercise.id,
-            sessionsPerDay: exercise.sessionsPerDay,
-            mode: exercise.mode,
-            reps: exercise.reps,
-            holdSeconds: exercise.holdSeconds,
-            durationMinutes: exercise.durationMinutes,
-            notes: exercise.notes,
-          }));
-
-        return {
-          exercises,
-          plans: {
-            [mondayISO]: { items: buildItemsForDate(mondayISO) },
-            [wednesdayISO]: { items: buildItemsForDate(wednesdayISO) },
-          },
         };
       }
 
