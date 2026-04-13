@@ -852,6 +852,10 @@
         font-size: 0.78rem;
       }
 
+      .auto-save-hint[hidden] {
+        display: none;
+      }
+
       .file-wrap {
         position: relative;
         overflow: hidden;
@@ -1044,6 +1048,9 @@
                 <div class="actions">
                   <button type="submit" class="primary" id="save-exercise">Oefening opslaan</button>
                   <button type="button" class="ghost" id="reset-form">Reset</button>
+                </div>
+                <div class="auto-save-hint" id="exercise-auto-save-hint" hidden>
+                  Bij bewerken worden wijzigingen automatisch opgeslagen.
                 </div>
               </form>
 
@@ -1266,6 +1273,7 @@
       let activeTimer = null;
       let statusTimer = null;
       let dailyAutoSaveTimer = null;
+      let exerciseAutoSaveTimer = null;
       let exerciseIndex = buildExerciseIndex(state.exercises);
 
       const el = {
@@ -1289,6 +1297,7 @@
         notes: document.getElementById("exercise-notes"),
         saveExercise: document.getElementById("save-exercise"),
         resetForm: document.getElementById("reset-form"),
+        exerciseAutoSaveHint: document.getElementById("exercise-auto-save-hint"),
         exerciseList: document.getElementById("exercise-list"),
         selectedDate: document.getElementById("selected-date"),
         selectedDatePill: document.getElementById("selected-date-pill"),
@@ -1723,6 +1732,14 @@
         }, 350);
       }
 
+      function queueExerciseAutoSave() {
+        if (!editingExerciseId) return;
+        if (exerciseAutoSaveTimer) clearTimeout(exerciseAutoSaveTimer);
+        exerciseAutoSaveTimer = setTimeout(() => {
+          persistEditedExercise();
+        }, 350);
+      }
+
       function renderWorkspaceVisibility() {
         document.body.classList.toggle("is-day-view", state.view === "day");
         document.body.classList.toggle("is-month-view", state.view === "month");
@@ -1732,9 +1749,18 @@
       }
 
       function bindEvents() {
-        el.mode.addEventListener("change", toggleExerciseFields);
+        el.mode.addEventListener("change", () => {
+          toggleExerciseFields();
+          queueExerciseAutoSave();
+        });
         el.form.addEventListener("submit", handleSaveExercise);
         el.resetForm.addEventListener("click", resetExerciseForm);
+        [el.name, el.category, el.reps, el.weight, el.hold, el.duration, el.sessions, el.notes].forEach(
+          (field) => {
+            field.addEventListener("input", queueExerciseAutoSave);
+            field.addEventListener("change", queueExerciseAutoSave);
+          }
+        );
         el.exerciseList.addEventListener("click", handleLibraryClick);
         el.selectedDate.addEventListener("change", () => {
           state.selectedDate = el.selectedDate.value || todayISO();
@@ -2042,27 +2068,8 @@
         el.duration.required = isDuration;
       }
 
-      function resetExerciseForm() {
-        editingExerciseId = null;
-        el.form.reset();
-        el.category.value = "hip";
-        el.mode.value = "hold";
-        el.reps.value = 10;
-        el.weight.value = 0;
-        el.hold.value = 5;
-        el.duration.value = 10;
-        el.sessions.value = 3;
-        updateExerciseButtonLabel();
-        toggleExerciseFields();
-      }
-
-      function updateExerciseButtonLabel() {
-        el.saveExercise.textContent = editingExerciseId ? "Wijzig oefening" : "Oefening opslaan";
-      }
-
-      function handleSaveExercise(event) {
-        event.preventDefault();
-        const exercise = {
+      function readExerciseFormValues() {
+        return {
           id: editingExerciseId || `ex-${Date.now().toString(36)}`,
           name: el.name.value.trim(),
           category: el.category.value,
@@ -2075,6 +2082,32 @@
           notes: el.notes.value.trim(),
           archived: false,
         };
+      }
+
+      function resetExerciseForm() {
+        editingExerciseId = null;
+        if (exerciseAutoSaveTimer) clearTimeout(exerciseAutoSaveTimer);
+        el.form.reset();
+        el.category.value = "hip";
+        el.mode.value = "hold";
+        el.reps.value = 10;
+        el.weight.value = 0;
+        el.hold.value = 5;
+        el.duration.value = 10;
+        el.sessions.value = 3;
+        el.exerciseAutoSaveHint.hidden = true;
+        updateExerciseButtonLabel();
+        toggleExerciseFields();
+      }
+
+      function updateExerciseButtonLabel() {
+        el.saveExercise.textContent = editingExerciseId ? "Wijzig oefening" : "Oefening opslaan";
+        el.exerciseAutoSaveHint.hidden = !editingExerciseId;
+      }
+
+      function handleSaveExercise(event) {
+        event.preventDefault();
+        const exercise = readExerciseFormValues();
 
         if (!exercise.name) return;
 
@@ -2093,6 +2126,24 @@
         resetExerciseForm();
         renderAll();
         showStatus("Oefening opgeslagen.", "success");
+      }
+
+      function persistEditedExercise() {
+        if (!editingExerciseId) return;
+        const exercise = readExerciseFormValues();
+        if (!exercise.name) return;
+
+        state.exercises = state.exercises.map((item) =>
+          item.id === editingExerciseId ? exercise : item
+        );
+        updatePlanItemsForExercise(exercise);
+        refreshExerciseIndex();
+        saveState();
+        renderHeroMetrics();
+        renderLibrary();
+        renderPlanner();
+        renderDaily();
+        renderOverview();
       }
 
       function updatePlanItemsForExercise(exercise) {
