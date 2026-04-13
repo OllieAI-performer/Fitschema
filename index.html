@@ -1032,14 +1032,8 @@
           </div>
           <aside class="hero-card">
             <div class="hero-photo">
-              <h2>Actie-foto</h2>
               <div class="hero-photo-frame">
                 <img src="./assets/olga.png" alt="Olga in beeld voor de weekplanner" />
-                <div class="hero-photo-label">Olga klaar voor deze trainingsweek</div>
-              </div>
-              <div class="quick-list">
-                <strong id="hero-date-label">Klaar voor een nieuw schema</strong>
-                <p>Open vandaag, vul de week en houd het scherm rustig.</p>
               </div>
             </div>
           </aside>
@@ -1355,7 +1349,6 @@
 
       const el = {
         heroMetrics: document.getElementById("hero-metrics"),
-        heroDateLabel: document.getElementById("hero-date-label"),
         status: document.getElementById("app-status"),
         libraryCount: document.getElementById("library-count"),
         form: document.getElementById("exercise-form"),
@@ -2540,7 +2533,6 @@
           (sum, dateISO) => sum + (readPlan(dateISO)?.items.length || 0),
           0
         );
-        el.heroDateLabel.textContent = `Geselecteerd: ${formatDate(parseISO(state.selectedDate))}`;
         el.heroMetrics.innerHTML = `
           <div class="metric">
             <strong>${activeExercises}</strong>
